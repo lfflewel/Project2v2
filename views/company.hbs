@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CompanySetup</title>
+    <style> 
+        /* Company Styling */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+.container{
+    max-width: 700px;
+    width: 100%;
+     background-color: rgb(245, 242, 231);
+    padding: 25px 30px;
+    border-radius: 5px;
+}
+.container .title{
+    font-size: 25px;
+    font-weight: 500;
+    position: relative;
+}
+.container .title::before{
+    content: '';
+    position: absolute;
+    left:0;
+    bottom: 0;
+    height: 3px;
+    width: 30px;
+ 
+}
+.container form .user-details{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 20px;
+}
+form{
+    flex-direction: initial !important;
+}
+form .user-details .input-box{
+    margin-bottom: 15px;
+    width: calc(100% / 2 - 20px);
+}
+.user-details .input-box .details{
+    font-weight: 500px;
+    margin-bottom: 5px;
+}
+
+.user-details .input-box input{
+    height: 45px;
+    width: 100%;
+    outline: none;
+    border-radius: 5px;
+    border:1px solid #ccc;
+    padding-left: 15px;
+    font-size: 16px;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+    }
+.user-details .input-box input input:focus,
+.user-details .input-box input input:valid{
+    border-color: #9659b6
+}   
+
+input[type=button],
+input[type=submit] {
+    margin: auto;
+    padding: 10px;
+    background-color: #71b9ff;
+    color: #fff;
+    border: none;
+    font-size: 22px;
+    border-radius: 10px;
+    transition: box-shadow 0.5s;
+    outline: none;
+    cursor: pointer;
+    width: 600px;
+}
+
+/* fileUpload */
+.file {
+    opacity: 0;
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+}
+
+.fileUpload  {
+            display: block;
+            position: relative;
+            width: 200px;
+            height: 50px;
+            border-radius: 25px;
+            background: linear-gradient(40deg, #ff6ec4, #7873f5);
+            box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform .2s ease-out;
+            
+}
+
+.container-fileUpload{
+    justify-content: space-between;
+}
+  
+    </style>
+    <script type=text/jstl></script>
+
+</head>
+<body>
+        {{!-- <div> 
+            <div id="greetings">
+                <h3 id="welcomeText">Congratulation! Your company is taking it first step in builing a mentoring program.</h3>                
+            </div>
+        </div> --}}
+        <div class="container">
+            <div class="title">Company Registration</div>
+                <form  action="/initCompany" method="POST" enctype="multipart/form-data">
+                    <div class="user-details">
+                        <div class="input-box">
+                            <span>Company</span>
+                            <input type="text" name="companyName" class="input-box" placeholder="Name" required>
+                        </div>
+                            <div class="input-box">
+                            <p>Upload company logo</p>
+                                <div class="fileUpload">                                
+                                    <input type="file" id="file" class="file">
+                                    <label for="file">Select file</label>
+                                </div>
+                            </div>
+                        <div class="input-box">
+                            <span> Admin First Name</span>
+                            <input type="text" name="adminFName" class="input-box" placeholder="First Name" required>
+                        </div>
+                        <div class="input-box">
+                            <span> Admin Last Name</span>
+                            <input type="text" name="adminLName" class="input-box" placeholder="Last Name" required>
+                        </div>
+                        <div class="input-box">
+                            <span>Job Title</span>
+                            <input type="text" name="adminJob" class="input-box" placeholder="Job Title" required>
+                        </div>
+                        <div class="input-box">
+                            <span>Email</span>
+                            <input type="text" name="adminEmail" class="input-box" placeholder="Email" required>
+                        </div>
+                        <div class="input-box">
+                            <span>Temporary Password</span>
+                            <input type="text" name="adminPW" class="input-box" placeholder="Password" required>
+                        </div>
+                        <div class="button">
+                            <input type="submit" class="btn btn-primary">
+                        </div>
+                            <p>Upon successful registration, you will be directed to login.</p> 
+                        
+                    </div>                       
+                </form>  
+                    
+    
+    <script src="index.js"></script> 
+</body>
+</html>

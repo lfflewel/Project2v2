@@ -1,0 +1,44 @@
+
+
+<form action="/profile" method="post" enctype="multipart/form-data">
+    <h3>Upload Profile Photo</h3>
+        <input type="file" name="photo" accept="image/*/">
+        <input type="submit" class="btn btn-primary">
+
+</form>
+
+<div class="card">
+
+    <img class="card_image" src="\defaultimage.png" alt="User Profile">
+
+    <h1 class="card_name">Lexi Flewelling</h1>
+    <div class="card_job">File Clerk</div>
+    <p class="card_about">Lexi is a super awesome persont. She is a talented artist, 
+        who loves to spend her time creating art, playing video games, and networking with......
+    </p>
+
+    <button type="button" class="btn btn-primary">My Program</button>
+    <button type="button" class="btn btn-primary">My Mentor</button>
+            
+</div>
+
+        {{!-- <div class= "card wrapper">
+            {{ #each rows }}
+
+            {{ #if this.uPhoto }}
+                <img class="card_image" src="{% this.uPhoto %}" alt="User Profile">
+            {{ else }} 
+                <img class="card_image" src="\defaultimage.png" alt="User Profile">
+            {{ /if }}
+                <h1 class="card_name">{{ this.uFName }}</h1>
+                <div class="card_job">{{ this.uJob }}</div>
+                <p class="card_about">Placeholder need to add about section</p>
+            {{ /each } }
+                <button type="button" class="btn btn-primary">My Program</button>
+                <button type="button" class="btn btn-primary">My Mentor</button>
+            
+        </div> --}}
+
+</div>
+
+

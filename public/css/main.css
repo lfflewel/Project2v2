@@ -1,0 +1,135 @@
+/* main style sheet */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+
+body{
+    box-sizing: border-box;
+    margin: 0;
+    font-family: 'Poppins' ;
+    background: linear-gradient(149deg, rgba(185,168,255,1) 0%, rgba(214,234,255,1) 48%, rgba(255,225,124,1) 100%);
+    width: 100%;
+}
+
+img {width: 100%;}
+
+
+/* /*  */
+
+/*Profile Card  */
+img {width:100%;} 
+
+.wrapper {
+    display: grid;
+    place-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+
+.btn {
+    border: none;
+    color:#fff;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+     font-style: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 3px;
+}
+
+.btn-primary {background-color: #008CBA;}
+
+.card{
+    text-align: center;
+    width: 400px;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0,0,0,0.13);
+    background-color: #fff;  
+ 
+}
+
+card_image {
+    display: block;
+    margin: 0 auto;  
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    object-fit: cover;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0,0,0,0.13);
+    border: 3px solid #fff;  
+}
+
+card_image{
+
+    width: 50%;
+}
+
+card_name { margin: 0; }
+
+card_job { color: #6E8192; }
+
+card_about { font-style: italic;}
+
+
+
+
+
+
+/* Navigation buttons */
+#navigation button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    width: 130px;
+    height: 130px;
+    border-radius: 15px;
+    background-color: transparent;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+}
+
+#navigation button img {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+#navigation button span {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+
+
+/* Homepage */
+
+.homecontainer{
+    margin: auto;
+    width: 90%;
+
+    padding: 10px;
+
+}
+
+#right {
+    display: inline;
+    width: 20%;
+    box-sizing: border-box;
+    float: right;
+}
+#left {
+    display: inline;
+    width: 60%;
+    box-sizing: border-box;
+    float: left;
+}
+
+
+ 

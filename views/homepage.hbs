@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DASH BOARD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .row {
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+
+        html, body {
+            height: 100%;
+        }
+        body {
+            background: linear-gradient(149deg, rgba(185,168,255,1) 0%, rgba(214,234,255,1) 48%, rgba(255,225,124,1) 100%);
+            margin: 0;
+            display: flex;
+        }
+        p {
+            margin-bottom: 0;
+            font-family: 'Montserrat-Thin', sans-serif;
+        }
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container{
+            width: 80%;
+            border-radius: 30px;
+            height: 93vh;
+            margin: auto;
+            padding: 50px 80px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container .top {
+            margin: 5px;
+            width: 100%;
+            height: 200px;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .container .bottom {
+            margin: 5px;
+            width: 80%;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 50px;
+            align-self: center;
+        }
+
+        #greetings {
+            padding: 20px 30px;
+            border-radius: 20px;
+            color: rgb(22, 22, 22);
+            width: 100%;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #navigation {
+            height: 200px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        #greetings h5 {
+            letter-spacing: 10px;
+            font-size: 35px;
+            margin: 0;
+        }
+
+        #greetings p {
+            font-size: 20px;
+        }
+
+        #welcomeText{
+            position: absolute;
+            left: 50%;
+            top: 10%;
+            transform: translate(-50%, -50%);
+            font-size: 25px;
+        }
+
+        #createNewCourse {
+            width: 100%;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #createNewCourse #newCourseBtn {
+            width: 300px;
+            height: 200px;
+            background-color: #ffda62;
+            border: 0;
+            box-shadow: 0;
+            padding: 20px;
+            font-weight: bold;
+            border-radius: 20px;
+            font-size: 20px;
+            box-shadow: 5px 5px 20px #797979;
+        }
+
+        #existingCourses {
+            margin-top: 20px;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            text-align: center;
+        }
+
+        #existingCourses h5 {
+            color: #1b1b1b;
+            letter-spacing: 10px;
+            font-size: 35px;
+            margin: 0px 0px 30px 0px;
+        }
+
+        #dropdownList {
+            width: 90%;
+        }
+
+        select{
+            display: block;
+            margin-right: 20vw;
+            font-size: 20px;
+            text-align: center;
+            border: 0;
+            padding: 15px;
+            width: 100%;
+            appearance: none;
+            outline: none;
+            box-shadow: 0;
+            background-color: #a298db;
+            color: #FFFFFF;
+        }
+
+        select::-ms-expand {
+            display: none;
+        }
+
+
+            #navigation button {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 10px;
+                width: 130px;
+                height: 130px;
+                border-radius: 15px;
+                background-color: transparent;
+                border: 0;
+                outline: 0;
+                cursor: pointer;
+            }
+
+            #navigation button img {
+                width: 60px;
+                margin-bottom: 10px;
+            }
+
+            #navigation button span {
+                font-size: 15px;
+                font-weight: bold;
+            }
+
+            .courseContainer button {
+                height: 60px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                border: 0;
+            }
+
+            .courseContainer #selectCourseBtn {
+                width: 85%;
+                background-color: #FFFFFF;
+                border-top-right-radius: 10px;
+                border-bottom-right-radius: 10px;
+            }
+
+            .courseContainer #deleteCourseBtn {
+                width: 8%;
+                background-color: #71b9ff;
+                border-top-left-radius: 10px;
+                border-bottom-left-radius: 10px;
+            }
+
+            .courseContainer #deleteCourseBtn:hover {
+                background-color: #161616;
+                color: #FFFFFF;
+            }
+
+            .courseContainer #selectCourseBtn:hover {
+                background-color: #fbd453;
+            }
+
+        /* Courses */
+        .courseList {
+            width: 100%;
+            height: 100%;
+            overflow-y: scroll;
+        }
+
+        .courseList .courseContainer {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .bottom #createNewCourseBtn {
+            background-color: transparent;
+            border: 0;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.6em;
+            cursor: pointer;
+        }
+
+        .bottom #createNewCourseBtn:hover {
+            color: #a298db;
+        }
+
+        ::-webkit-scrollbar {
+            background: #FFFFFF;
+            border-radius: 20px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #a298db;
+            border-radius: 20px;
+        }
+            
+        /* Start Main */
+        h1 {
+            margin: auto;
+        }
+
+        /*Profile Card  */
+       img {width:100%;} 
+
+       .wrapper {
+           display: grid;
+           place-items: center;
+           height: 100vh;
+       }
+
+       .btn {
+           border: none;
+           color:#fff;
+           padding: 15px 32px;
+           text-align: center;
+           text-decoration: none;
+           display: inline-block;
+           font-style: 16px;
+           margin: 4px 2px;
+           cursor: pointer;
+           width: 100%;
+           border-radius: 3px;
+       }
+
+       .btn-primary {background-color: #008CBA;}
+
+       .card{
+           text-align: center;
+           width: 400px;
+           padding: 20px;
+           border-radius: 5px;
+           box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0,0,0,0.13);
+           background-color: #fff;        
+    }
+
+    card_image {
+            display: block;
+            margin: 0 auto;  
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            object-fit: cover;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0,0,0,0.13);
+            border: 3px solid #fff;  
+        }
+    card_image{
+        width: 50%;
+    }
+
+    card_name { margin: 0; }
+
+    card_job { color: #6E8192; }
+
+    card_about { font-style: italic;}
+
+    /* fileUpload */
+.file {
+    opacity: 0;
+    width: 0.1px;
+    height: 0.1px;
+    position: absolute;
+}
+
+.fileUpload  {
+            display: block;
+            position: relative;
+            width: 200px;
+            height: 50px;
+            border-radius: 25px;
+            background: linear-gradient(40deg, #ff6ec4, #7873f5);
+            box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform .2s ease-out;
+            
+}
+
+.container-fileUpload{
+    justify-content: space-between;
+}
+    
+    
+    </style>
+
+    <script type=text/jstl></script>
+
+</head>
+<body>
+    <div class="homecontainer">
+
+        <div class="top">
+            <div id="greetings">
+                <h5>{{companyName}}</h5>
+                <!-- ADD COMPANY LOGO -->
+                <p><b>Welcome, {{activeUserFullName}}.</b></p>
+                <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p>
+            </div>
+        </div>
+        
+        {{!-- navigation --}}
+        <div id="navigation">
+            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                <img src="/img/homeIcon.png">
+                <span>HOME</span>
+            </button>
+            {{#if addPermission}}
+            <button type="button" class="navigation-buttons" onclick="location.href = '/addUser'">
+                <img src="/img/adduser.png">
+                <span>Add User</span>
+            </button>
+            <button type="button" class="navigation-buttons" onclick="location.href = '/addProgram'">
+                <img src="/img/addprogram.png">
+                <span>Add Program</span>
+            </button>
+            {{/if}}
+            
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
+        </div>
+
+        {{!-- profile card --}}
+        <div class= "card wrapper" id="left">
+            {{#each results}}
+
+            {{#if this.uPhoto}}
+                <img class="card_image" src="{{this.uPhoto}}" alt="User Profile">
+            {{else}} 
+                <img class="card_image" src="/img/defaultimage.png" alt="User Profile">
+            {{/if}}
+                <h1 class="card_name">{{this.uFName}}  {{this.uLName}}</h1>
+                <div class="card_job">{{this.uJob}}</div>
+                <p class="card_about">{{this.uAbout}}</p>
+        </div>
+        {{!-- right side buttons --}}
+        <div class="profile-btns" id="right">
+            {{#if "Mentee"}}
+                <button type="button" class="btn btn-primary" onclick="location.href = '/profile'" >My Mentor</button>
+            {{else}}
+                <button type="button" class="btn btn-primary">My Mentees</button>
+            {{/if}}
+                <button type="button" class="btn btn-primary" onclick="location.href = '/userProgram'">My Program</button>
+                
+                <div>
+                {{!-- {{#if !imHome}} --}}
+                    <form  action="/updateProfilePhoto" method="POST" enctype="multipart/form-data">
+                        <div class="input-box">
+                            <p>Upload photo</p>
+                                <div class="fileUpload">                                
+                                    <input type="file" id="file" class="file">
+                                    <label for="file">Select file</label>
+                            </div>
+                                <div class="button">
+                                <input type="submit" class="btn btn-primary">
+                            </div>
+                        </div>
+                    </form>
+                {{!-- {{/if}} --}}
+        {{/each}}
+        </div>
+    </div>      
+        
+
+            {{!-- {{#if activeUserPhoto}}
+                <img class="card_image" src="{{activeUserPhoto}}" alt="User Profile">
+            {{else}} 
+                <img class="card_image" src="\defaultimage.png" alt="User Profile">
+            {{/if}}
+                <h1 class="card_name">{{activeUserPhoto}}</h1>
+                <div class="card_job">{{activeUserJob}}</div>
+                <p class="card_about">{{activeUserAbout}}</p>
+            {{/each}}
+                <button type="button" class="btn btn-primary">My Program</button>
+                <button type="button" class="btn btn-primary">My Mentor</button> --}}
+            
+        
+        <!-- <div class="bottom">
+            <button type="button" class="navigation-buttons" id="createNewUserBtn" onclick="location.href = '/addUsers'">
+                ADD A NEW USER
+            </button>
+            
+        </div>
+         <div class="right">
+           
+        </div>
+    </div>
+    <script src="index.js"></script> 
+</body>
+</html>
