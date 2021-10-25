@@ -92,6 +92,7 @@ let addPermission = false;
 let imHome = true;
 let todayDate = new Date().toLocaleString();
 let photo;
+let newUserPhoto;
 /*---------------------------------------------------------------*/
 
 /* -- INVALID LOG IN SCREEN ---------------------------------- */
@@ -312,7 +313,7 @@ app.post('/createUser', function (req, res) {
         return res.status(400).send('No files were uploaded.')
     }
 
-    let newUserPhoto = req.files.filename;
+    newUserPhoto = req.files.filename;
     uploadPath = __dirname + '/public/upload/profilePhoto/' + newUserPhoto.name;
     console.log(newUserPhoto);
 
