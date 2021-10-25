@@ -65,16 +65,6 @@ pool.query('select 1+1', (err, results) => {
     console.log('Connection established');
 });
 
-//  Calling the variable above and connecting the db
-// IF connect, terminal will say "Connection establish..."
-pool.query('select 1+1', (err, results) => {
-    if (err) {
-        console.log('Error connecting to Db');
-        return;
-    }
-    console.log('Connection established');
-});
-
 app.listen(3000);
 console.log('Website Sever Is Running on Port 3000. Access via LOCALHOST:3000');
 /* ----------------------CONNECTED------------------------------------- */
@@ -172,7 +162,7 @@ app.post('/login', (req, res) => {
                 // we will also assign that to a global variable above ---> in also case of needing to reference it in other methods below
                 companyId = results[0].cId;
                 companyName = results[0].cName;
-                companyLogo = results[0].uLName;
+                companyLogo = results[0].uLogo;
 
                 // pass object from select statement (results) plus other global vars
                 res.render('homepage', { results, companyName, companyLogo, activeUserFullName, addPermission, imHome })
@@ -212,12 +202,14 @@ app.post('/getStarted', function (req, res) {
 app.post('/initCompany', function (req, res) {
 
     companyName = req.body.companyName;
-    companyLogo = req.body.companyLogo;
+    companyLogo = req.files.photo;
     var adminFName = req.body.adminFName;
     var adminLName = req.body.adminLName;
     var adminEmail = req.body.adminEmail;
     var adminPW = req.body.adminPW;
     var adminJob = req.body.adminJob;
+
+    
 
     console.log(companyName);
     console.log(companyLogo);
@@ -238,27 +230,40 @@ app.post('/initCompany', function (req, res) {
         }
         else {
             //Create New Company
-            pool.query(`INSERT INTO Company (cName, cLogo) VALUES ("${companyName}", "${companyLogo}")`, function (err, results) {
-                if (err) throw err;
-                companyId = results.insertId
-                console.log('Company Account Inserted');
-                console.log(`Company ID : ${companyId}`)
-                res.redirect('/');
+            let uploadPath;
+    
+            if (!req.files || Object.keys(req.files).length === 0) {
+                return res.status(400).send('No files were uploaded.')
+            }
 
-                //Create Company's Sys Admin
-                pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, ucId) VALUES ("${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${adminJob}", "${companyId}")`, function (err, results) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    else {
-                        var sysAdminId = results.insertId
-                        console.log(`System Admin Id: ${sysAdminId}`);
-                        canAddNewMessage = true;
-                    }
-                }); //End Insert User (child)
-            }); // End Insert Company (parent) 
-        };
-    }); // End Select
+            uploadPath = __dirname + '/public/upload/profilePhoto/' + companyLogo.name;
+            console.log(companyLogo);
+
+            // user mv(to place file on the server)
+            companyLogo.mv(uploadPath, function (err) {
+                if (err) return res.status(500).send(err);
+                    pool.query(`INSERT INTO Company (cName, cLogo) VALUES ("${companyName}", "${companyLogo.name}")`, function (err, results) {
+                        if (err) throw err;
+                        companyId = results.insertId
+                        console.log('Company Account Inserted');
+                        console.log(`Company ID : ${companyId}`)
+                        res.redirect('/');
+
+                        //Create Company's Sys Admin
+                        pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, ucId) VALUES ("${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${adminJob}", "${companyId}")`, function (err, results) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                var sysAdminId = results.insertId
+                                console.log(`System Admin Id: ${sysAdminId}`);
+                                canAddNewMessage = true;
+                            }
+                        }); //End Insert User (child)
+                    }); // End Insert Company (parent) 
+                });
+            }; // End Select
+});
 }); //End /initCompany
 /* ---------------------------------------------END COMPAY SETUP----------------------------------------------- */
 
@@ -299,6 +304,7 @@ app.post('/createUser', function (req, res) {
     // var newUserPhoto;
 
     // Photo upload
+    
     let uploadPath;
 
     if (!req.files || Object.keys(req.files).length === 0) {
@@ -306,7 +312,7 @@ app.post('/createUser', function (req, res) {
     }
 
     let newUserPhoto = req.files.filename;
-    uploadPath = __dirname + '/upload/' + newUserPhoto.name;
+    uploadPath = __dirname + '/public/upload/profilePhoto/' + newUserPhoto.name;
     console.log(newUserPhoto);
 
     // user mv(to place file on the server)
@@ -319,49 +325,49 @@ app.post('/createUser', function (req, res) {
                 res.render('homepage', {results, companyName, companyLogo, activeUserFullName, addPermission, imHome })
             }
     
-    });
+        });
 
+        console.log(newUserFName);
+        console.log(newUserLName);
+        console.log(newUserEmail);
+        console.log(newUserPW);
+        console.log(newUserRole);
+        console.log(newUserJob)
+        console.log(newUserPhoto);
 
+        pool.query('SELECT * FROM User WHERE uEmail = ?', [newUserEmail], function (err, results, fields) {
+            if (err) throw err;
 
-    console.log(newUserFName);
-    console.log(newUserLName);
-    console.log(newUserEmail);
-    console.log(newUserPW);
-    console.log(newUserRole);
-    console.log(newUserJob)
-    console.log(newUserPhoto);
+            if (results.length > 0) {
+                canAddNewMessage = false;
+                newUserMessage = 'Email already exists, enter a different email.';
+                res.redirect('/addUser');
+                console.log('Email already exists');
+            }
+            else {
+                //save dato into the database
+                pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, uPhoto, ucId) VALUES 
+                    ("${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserPhoto.name}", "${companyId}")`, function (err, results) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    else {
+                        newUserMessage = 'User added.';
+                        var newUserId = results.insertId
+                        console.log(`New User Id: ${newUserId}`);
+                        canAddNewMessage = true;
 
-    pool.query('SELECT * FROM User WHERE uEmail = ?', [newUserEmail], function (err, results, fields) {
-        if (err) throw err;
+                    }
+            
+                    res.redirect('/addUser', {activeUserFullName, companyName, companyLogo, roles});
 
-        if (results.length > 0) {
-            canAddNewMessage = false;
-            newUserMessage = 'Email already exists, enter a different email.';
-            res.redirect('/addUser');
-            console.log('Email already exists');
-        }
-        else {
-            //save dato into the database
-            pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, uPhoto, ucId) VALUES 
-                ("${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserPhoto.name}", "${companyId}")`, function (err, results) {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    newUserMessage = 'User added.';
-                    var newUserId = results.insertId
-                    console.log(`New User Id: ${newUserId}`);
-                    canAddNewMessage = true;
+                }); //end Insert 
 
-                }
-                res.redirect('/addUser', {activeUserFullName, companyName, companyLogo, roles});
-            }); //end Insert 
+            };
+        }); // End Select
 
-        };
-    }); // End Select
-
-}); //End /createUser
-
+    }); //End /createUser
+});
 /* ----------------------------------------------------------- */
 
 //
@@ -374,7 +380,6 @@ app.get('', (req, res) => {
 
 // upload profile pic, and return to homepage
 app.post('/updateProfilePhoto', (req, res) => {
-    res.render('index');
 
     // Photo upload
     let photo;
@@ -386,23 +391,25 @@ app.post('/updateProfilePhoto', (req, res) => {
 
     // name of the input it photo.
     photo = req.files.photo;
-    uploadPath = __dirname + '/upload/' + photo.name;
-    console.log(photo);
+    uploadPath = __dirname + '/public/upload/profilePhoto/' + photo.name;
+    console.log(uploadPath);
+    console.log(photo.name)
 
     // user mv(to place file on the server)
     photo.mv(uploadPath, function (err) {
         if (err) return res.status(500).send(err)        
     }); 
 
-    pool.query('UPDATE User SET uPhoto = ? WHERE iId = & ', [photo.name, activeUserId], (err, results) => {
- 
+    pool.query('UPDATE User SET uPhoto = ? WHERE uId = ? ', [photo.name, activeUserId], (err, results) => {
+        if (err) {
+            console.log(err);
+        }
         if(!err) {
-            res.render('homepage', {results, companyName, companyLogo, activeUserFullName, addPermission, imHome })
+            console.log(results[0]);
+            res.redirect('/');
         }
 
-        }); //end Insert 
-
-    });
+    }); //end Insert 
 });
 
 //--------------------------------------------------------------------------------
