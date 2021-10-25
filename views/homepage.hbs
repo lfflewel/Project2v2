@@ -372,11 +372,11 @@
                 <h5>{{companyName}}</h5>
                 <!-- ADD COMPANY LOGO -->
                 {{#each results}}
-                    {{#if this.cLogo}}
-                        <img class="logo_image" src="/public/upload/profilePhoto/{{this.cLogo}}" alt="Company Logo">
-                    {{else}} 
-                        <img class="logo_image" src="/public/upload/profilePhoto/defaultimage.png" alt="Company Logo">
-                    {{/if}}
+                     {{#if this.uPhoto}}
+                        <img class="card_image" src="/public/upload/profilePhoto/{{this.uPhoto}}" alt="User Profile">
+                     {{else}} 
+                        <img class="card_image" src="/public/upload/profilePhoto/defaultimage.png" alt="User Profile">
+                      {{/if}}
                 {{/each}}
                 <p><b>Welcome, {{activeUserFullName}}.</b></p>
                 <h6>{{todayDate}}</h6>
