@@ -91,6 +91,7 @@ let newUserMessage = "";
 let addPermission = false;
 let imHome = true;
 let todayDate = new Date().toLocaleString();
+let photo;
 /*---------------------------------------------------------------*/
 
 /* -- INVALID LOG IN SCREEN ---------------------------------- */
@@ -382,7 +383,7 @@ app.get('', (req, res) => {
 app.post('/updateProfilePhoto', (req, res) => {
 
     // Photo upload
-    let photo;
+    
     let uploadPath;
 
     if (!req.files || Object.keys(req.files).length === 0) {
