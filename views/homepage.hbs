@@ -372,10 +372,10 @@
                 <h5>{{companyName}}</h5>
                 <!-- ADD COMPANY LOGO -->
                 {{#each results}}
-                     {{#if this.uPhoto}}
-                        <img class="card_image" src="/public/upload/profilePhoto/{{this.uPhoto}}" alt="User Profile">
+                     {{#if this.cLogo}}
+                        <img class="logo_image" src="/public/upload/profilePhoto/{{this.cLogo}}" alt="User Profile">
                      {{else}} 
-                        <img class="card_image" src="/public/upload/profilePhoto/defaultimage.png" alt="User Profile">
+                        <img class="logo_image" src="/public/upload/profilePhoto/defaultimage.png" alt="User Profile">
                       {{/if}}
                 {{/each}}
                 <p><b>Welcome, {{activeUserFullName}}.</b></p>
@@ -415,9 +415,9 @@
             {{#each results}}
 
             {{#if this.uPhoto}}
-                <img class="card_image" src="{{this.uPhoto}}" alt="User Profile">
+                <img class="card_image" src="/public/upload/profilePhoto/{{this.uPhoto}}" alt="User Profile">
             {{else}} 
-                <img class="card_image" src="/img/defaultimage.png" alt="User Profile">
+                <img class="card_image" src="/public/upload/profilePhoto/defaultimage.png" alt="User Profile">
             {{/if}}
                 <h1 class="card_name">{{this.uFName}}  {{this.uLName}}</h1>
                 <div class="card_job">{{this.uJob}}</div>
