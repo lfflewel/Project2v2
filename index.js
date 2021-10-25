@@ -90,7 +90,7 @@ let activeUserFirstPW;
 let newUserMessage = "";
 let addPermission = false;
 let imHome = true;
-
+let todayDate = new Date().toLocaleString();
 /*---------------------------------------------------------------*/
 
 /* -- INVALID LOG IN SCREEN ---------------------------------- */
@@ -165,7 +165,7 @@ app.post('/login', (req, res) => {
                 companyLogo = results[0].uLogo;
 
                 // pass object from select statement (results) plus other global vars
-                res.render('homepage', { results, companyName, companyLogo, activeUserFullName, addPermission, imHome })
+                res.render('homepage', { results, companyName, companyLogo, activeUserFullName, addPermission, imHome, todayDate: todayDate })
             }
             else {
                 res.redirect('/invalidLogin');
@@ -322,7 +322,7 @@ app.post('/createUser', function (req, res) {
         pool.query('UPDATE User SET uPhoto = ? WHERE iId = & ', [photo.name, activeUserId], (err, results) => {
  
             if(!err) {
-                res.render('homepage', {results, companyName, companyLogo, activeUserFullName, addPermission, imHome })
+                res.render('homepage', {results, companyName, companyLogo, activeUserFullName, addPermission, imHome, todayDate: todayDate })
             }
     
         });
