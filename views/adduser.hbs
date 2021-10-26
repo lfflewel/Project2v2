@@ -354,24 +354,21 @@
                    <div class="form-container hide" id="loginForm">
                        <form action="/createUser" method="POST" enctype="multipart/form-data">  
                             <p>User Information</p>
-                            <input type="text" name="userFName" class="input-box" placeholder="FLast Name" required>
+                            <input type="text" name="userFName" class="input-box" placeholder="Last Name" required>
                             <input type="text" name="userLName" class="input-box" placeholder="Last Name" required>
                             <input type="text" name="userJob" class="input-box" placeholder="Job Title" required>
                             <input type="text" name="userEmail" class="input-box" placeholder="Email" required>
                             <input type="text" name="userPW" class="input-box" placeholder="Password" required>                            
                             <select id="selectRole" name="userRole" required>
                                 <option value="0">Select Role</option>
-                                {{!-- <% for (var i=0; i < roles.length; i++) { %>
-                                    <option value="<%= roles[i] %>"><%= roles[i] %></option>
-                                <% } %>     --}}
                                 {{#each roles}}
-                                    <option value="{{roles}}"></option>
+                                    <option value="{{this}}">{{this}}</option>
                                 {{/each}}
                             </select>
                                 <div class="input-box">
                                     <p>Upload photo</p>
                                         <div class="fileUpload">                                
-                                            <input type="file" id="file" class="file">
+                                            <input type="file" id="file" name="file" class="file" required>
                                             <label for="file">Select file</label>
                                     </div>
                                         <div class="button">
