@@ -76,6 +76,7 @@ console.log('Website Sever Is Running on Port 3000. Access via LOCALHOST:3000');
 let companyId;
 let companyName;
 let companyLogo;
+
 let canAddNewMessage = true;
 let canAddNewMessage1 = true;
 let canAddNewMessage2 = true;
@@ -93,11 +94,25 @@ let imHome = true;
 let todayDate = new Date().toLocaleString();
 let activeUserPhoto;
 // let newUserPhoto;
+
+let newUserFName;
+let newUserLName;
+let newUserEmail;
+let newUserPW;
+let newUserRole;
+let newUserJob;
+let newUserAbout;
+
+
+
+
+
+
 /*---------------------------------------------------------------*/
 
 /* -- INVALID LOG IN SCREEN ---------------------------------- */
-app.get('/invalidLogin', function (req, res) {
-    res.render('invalidLoginScreen');
+app.get('/invalidLoginScreen', function (req, res) {
+    res.render('invalidLoginScreen.hbs');
 })
 
 app.post('/goBackToLogin', function (req, res) {
@@ -109,15 +124,76 @@ app.post('/goBackToLogin', function (req, res) {
 // since this is main page upon loading website, we can just define '/' as the request / route
 app.get('/', function (req, res) {
     // res.render('page') will render the html to localhost:3000
-    res.render('login', { canAddNewMessage, canAddNewMessage1, canAddNewMessage2 });
+    res.render('login');
 });
 
 
-// The actual method that will get the sign in values typed in and then validate it
-// compare to db record - validate --> then redirect as needed.
-app.post('/login', (req, res) => {
 
-    // use req.body.varName when we want to retrieve the value entered on the HTML textboxes...etc
+
+/*---------------------------------------------------------------*/
+
+/* ------------------------------- SETUP COMPANY INFO------------------------------------ */
+
+// display register
+app.post('/getStarted', function (req, res) {
+    res.render('company');
+});
+
+// create a company info
+app.post('/initCompany', function (req, res) {
+	companyName = req.body.companyName;
+	companyLogo = req.files.photo;
+	adminFName = req.body.adminFName;
+	adminLName = req.body.adminLName;
+	adminJob = req.body.adminJob;
+	adminEmail = req.body.adminEmail;
+	adminPW = req.body.adminPW;
+
+
+	pool.query(`SELECT * FROM User WHERE uEmail = ?`, [adminEmail], function (err, results, fields) {
+		if (err) throw err;
+        	if (results.length > 0) {
+		   console.log('Email already exists');
+		    }
+		else {
+		    let uploadPath;
+            
+            	   if (!req.files || Object.keys(req.files).length === 0) {
+                      return res.status(400).send('No files were uploaded.')
+                   }
+
+            	   uploadPath = __dirname + '/public/upload/companyLogo' + companyLogo.name;
+                   console.log(companyLogo);
+                   
+                   // user mv(to place file on the server)
+            	    companyLogo.mv(uploadPath, function (err) {
+                        if (err) return res.status(500).send(err);
+                        
+                        // INSERT COMPANY INFO
+                        pool.query(`INSERT INTO Company (cName, cLogo) VALUES ("${companyName}", "${companyLogo.name}")`, function (err, results) {
+                            if (err) throw err;
+                            companyId = results.insertId;
+                            console.log("Created Account")
+				
+		
+                            // INSERT ADMIN INFO
+                            pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, ucId) VALUES ("${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${adminJob}", "${companyId}")`, function(err, results) {
+                                if (err) throw (err);
+                                console.log("Added ADMIN INFO")
+					
+				            });
+			            });
+                    });
+            res.redirect('/');
+        };
+	});
+});
+
+/*-------------------------------END COMPANY SETUP-----------------------------------------*/
+
+
+/*----------------------------------------LOGIN ACCOUNT----------------------------------*/
+app.post('/login', function(req, res) {
     var useremail = req.body.useremail;
     var password = req.body.password;
 
@@ -125,12 +201,12 @@ app.post('/login', (req, res) => {
     console.log(`Useremail: ${useremail}`);
     console.log(`Password: ${password}`);
 
-    // if (useremail == valid && password == valid)
+     // if (useremail == valid && password == valid)
     if (useremail && password) {
 
         // call to db --> pass in the useremail && passwod as the parameters [] for the QUERY string below
         // inside the query statement, we also define a function that will handle the error, results from the SQL query
-        pool.query('SELECT * FROM User JOIN Company on ucId = cId WHERE uEmail = ? AND uPass = ?', [useremail, password], (err, results) => {
+        pool.query('SELECT * FROM User WHERE uEmail = ? AND uPass = ?', [useremail, password], function (err, results) {
             if (!err);
 
             if (results.length > 0) {
@@ -139,7 +215,7 @@ app.post('/login', (req, res) => {
                 console.log(results);
 
                 // now we set our session.loggedin to be true
-                // set the session useremail to the signed in useremail --> in case of needing to reference it in other methods below
+                // set the session username to the signed in username --> in case of needing to reference it in other methods below
                 req.session.loggedin = true;
                 req.session.useremail = useremail;
 
@@ -152,160 +228,86 @@ app.post('/login', (req, res) => {
                 activeUserFirstPW = results[0].uFirstPass;
                 activeUserAbout = results[0].uAbout;
                 activeUserJob = results[0].userJob
-                activeUserphoto = results[0].uPhoto
                 companyId = results[0].ucId;
+                
                 activeUserFullName = activeUserFName + ' ' + activeUserLName;
 
+                console.log(`User ID: ${activeUserId}`);
+                console.log(`User Role: ${activeUserRole}`);
+                
+                
+
+                
+                
+               
                 // Establish permission to add users and programs
                 if (activeUserRole == "Admin" || activeUserRole == "Program Manager") {
-                    addPermission = 'true';
+                    addPermission = true;
                 }
-
-                // we will also assign that to a global variable above ---> in also case of needing to reference it in other methods below
-                companyId = results[0].cId;
-                companyName = results[0].cName;
-                companyLogo = results[0].uLogo;
-
-                // pass object from select statement (results) plus other global vars
-                res.render('homepage', { results, companyName, companyLogo, activeUserFullName, activeUserId, addPermission, imHome, todayDate: todayDate })
+                res.redirect('/homepage')
             }
             else {
-                res.redirect('/invalidLogin');
+                    res.redirect('/invalidLoginScreen');
             }
-        });
+        })
+              
     } else {
-        res.redirect('/invalidLogin');
+        res.redirect('/invalidLoginScreen');
     }
-}); //End /login
-/* ----------------------------------------------------------- */
+});
+
+/*------------------------------END LOGIN--------------------------------------------*/
+
+
+/*--------------------------------LOGOUT ACCOUNT----------------------------------*/
 
 // LOG USER OUT REDIRECT TO LOGIN PAGE
 app.get('/logout', function (req, res) {
     req.session.destroy();
+    addPermission = false;
     res.redirect('/');
-}); // End /logout
-
-/* ----------------------------------------------------------- */
-
-// RENDER COMPANY PAGE
-// app.post('/getStarted', function(req, res) {
-//     res.render('company');
-// })
-
-/* ----------------------------------------------------------- */
-
-/* -------------------------------------------- BEGIN COMPANY SETUP------------------------------------ */
-
-// Render company.html (getstarted button)
-app.post('/getStarted', function (req, res) {
-    res.render('company');
 });
 
-app.post('/initCompany', function (req, res) {
+/*------------------------------END LOGOUT--------------------------------------------*/
 
-    companyName = req.body.companyName;
-    let adminFName = req.body.adminFName;
-    let adminLName = req.body.adminLName;
-    let adminEmail = req.body.adminEmail;
-    let adminPW = req.body.adminPW;
-    let adminJob = req.body.adminJob;
-    let uploadPath;
-
-    console.log(companyName);
-    console.log(adminFName);
-    console.log(adminLName);
-    console.log(adminEmail);
-    console.log(adminPW);
-    console.log(adminJob);
-
-    pool.query('SELECT * FROM User WHERE uEmail = ?', [adminEmail], function (err, results, fields) {
-        if (err) throw err;
-
-        if (results.length > 0) {
-            canAddNewMessage = false;
-            newUserMessage = 'Email already exists, enter a different email.';
-            // res.render('company', {newUserMessage});  
-
-            console.log('Email already exists');
-        }
-        else {
-            //Create New Company
-
-            // Check for uploaded files
-            if (!req.files || Object.keys(req.files).length === 0) {
-                newUserMessage = ('No file was uploaded.')
-            }
-            else {
-
-                companyLogo = req.files.file;
-                uploadPath = __dirname + '/public/upload/profilePhoto/' + companyLogo.name;
-                console.log(companyLogo);
-            }
-
-
-            // user mv(to place file on the server)
-            companyLogo.mv(uploadPath, function (err) {
-                if (err) return res.status(500).send(err);
-            });
-            pool.query(`INSERT INTO Company (cName, cLogo) VALUES ("${companyName}", "${companyLogo.name}")`, function (err, results) {
-                if (err) throw err;
-                companyId = results.insertId;
-                console.log('Company Account Inserted');
-                console.log(`Company ID : ${companyId}`)
-
-
-                //Create Company's Sys Admin
-                pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, ucId) VALUES ("${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${adminJob}", "${companyId}")`, function (err, results) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    else {
-                        var sysAdminId = results.insertId
-                        console.log(`System Admin Id: ${sysAdminId}`);
-                        canAddNewMessage = true;
-                    }
-                }); //End Insert User (child)-User
-            }); // End Insert Company (parent)- Company 
-
-        }; // End else
-    });  // End Select                  res.redirect('/');
-}); //End /initCompany
-/* ---------------------------------------------END COMPAY SETUP----------------------------------------------- */
-
-/* -- To View someone else's profile NOT DONE----------------------------------------------- */
-app.get('/profile', function (req, res) {
+/*------------------------------HOMEPAGE(USER'S PROFILE)--------------------------------------------*/
+app.get('/homepage', function(req, res) {
     if (req.session.loggedin) {
-        pool.query('SELECT * FROM User WHERE uId = ?', [activeUserId], (err, results) => {
-
-            if (!err) {
-                res.redirect('/homepage', { formVars });
-            }
-
+        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+            res.render('homepage', {results, activeUserFullName, addPermission, imHome, companyName, companyLogo, todayDate});
         });
-    }
-}); //End /Homepage
+    };
+});
 
-/* ----------------------------------------------------------- */
+        
+/*------------------------------END HOMEPAGE(USER'S PROFILE)-------------------------------*/
 
 
-
-/*--------NEW USER**********************************************/
-
-// Render adduser.html (adduser button)
+/*------------------------------SET NEW USER--------------------------------------------*/
+// Render adduser.hbs
 app.get('/addUser', function (req, res) {
     // newUserMessage = 'Please enter user information.';
-    res.render('adduser', { roles, companyName, companyLogo, activeUserFullName, newUserMessage });
-});
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+            res.render('addUser', {results, activeUserFullName, addPermission, roles, imHome, companyName, companyLogo, todayDate});
+        });
+    }
+})
 
 // Create New User
 app.post('/createUser', function (req, res) {
 
-    let newUserFName = req.body.userFName;
-    let newUserLName = req.body.userLName;
-    let newUserEmail = req.body.userEmail;
-    let newUserPW = req.body.userPW;
-    let newUserRole = req.body.userRole;
-    let newUserJob = req.body.userJob
+    newUserFName = req.body.userFName;
+    newUserLName = req.body.userLName;
+    newUserEmail = req.body.userEmail;
+    newUserPW = req.body.userPW;
+    newUserRole = req.body.userRole;
+    newUserJob = req.body.userJob;
+    newUserAbout= req.body.userAbout;
     let newUserPhoto;
     let uploadPath;
 
@@ -347,26 +349,18 @@ app.post('/createUser', function (req, res) {
                     console.log(err);
                 }
                 else {
-                    newUserMessage = 'User added.';
+                    
                     var newUserId = results.insertId
                     console.log(`New User Id: ${newUserId}`);
-                    canAddNewMessage = true;
+                    
                 }
-                res.render('addUser', { activeUserFullName, companyName, companyLogo, roles });
-            }); //end pool
-        }; //end else
-    }); // End pool
-}); //End /createUser
+                res.render('addUser', {results, activeUserFullName, companyName, companyLogo, roles, alert:'User added successfully.' });
+            }); 
+        }; 
+    }); 
+}); 
 
-/* ----------------------------------------------------------- */
-
-
-
-// call TO  profile.hbs
-app.get('', (req, res) => {
-    res.render('login');
-});
-
+// update user photo
 app.post('/updateProfilePhoto', function (req, res) {
     let uploadPath;
 
@@ -390,39 +384,66 @@ app.post('/updateProfilePhoto', function (req, res) {
 
             if (!err) {
 
-                res.render('homepage', {companyName, companyLogo, activeUserFullName, activeUserPhoto, activeUserId, addPermission, imHome, todayDate: todayDate })
+                res.redirect('/homepage')
 
             }
-        }); //end pool
-    }); // end mv
-}); // end post
-
-
-
-
-
-//--------------------------------------------------------------------------------
-// STILL NEEDED
-app.post('/userProgram', (req, res) => {
-    res.render('userProgram');
-
-    // See notes in userProgram.hsb
-
-});
-
-// 
-app.post('/visitProfile', (req, res) => {
-    // EMPTY FUNCTION
-    res.render('userProgram');
-
-    // User this to visit some's profile. Need to change imHome to False.
-
+        });
+    });
 });
 
 
-app.post('/userProfile', (req, res) => {
-    // EMPTY FUNCTION
-    // this will be used when a user if viewing someone else profile.
+/*------------------------------END SET NEW USER-------------------------------*/
 
-    res.render('homepage');
+
+/*------------------------------EDIT USER-------------------------------*/
+app.get('/editUser', function(req, res) {
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
+            if (!err) {
+                res.render('editUser', {results, activeUserFullName, companyName, companyLogo, roles, todayDate});
+            }
+            else {
+                console.log(err)
+            }
+            
+        });
+    };
 });
+
+app.post('/editUser', function (req, res) {
+    if (req.session.loggedin) {
+        let updateUserFName = req.body.updateFN;
+        let updateUserLName = req.body.updateLN;
+        let updateUserEmail = req.body.updateEmail;
+        let updateUserPW = req.body.updatePassword;
+        let updateUserRole = req.body.updateRole;
+        let updateUserJob = req.body.updateJob;
+        let updateUserAbout = req.body.updateAbout;
+
+    
+        pool.query(`UPDATE User SET uFName=?, uLName=?, uEmail=?, uPass=?, uRole=?, uJob=?, uAbout=?  WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserEmail, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, activeUserId], function(err, results) {
+            if(!err) {
+                pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
+                    if(!err) {
+                       
+                        res.render('editUser', {results, activeUserFullName, companyName, companyLogo, roles, todayDate, alert: 'User Updated Successfully'});
+            
+                    }
+                    else {
+                        console.log(err)
+                    }
+                    
+                    console.log('The data from user table : \n', results)
+                })
+            }
+            else {
+                console.log(err)
+            }
+    
+         })
+        }
+})
+
+
+
+/*------------------------------END EDIT USER-------------------------------*/

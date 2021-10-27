@@ -4,37 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit User </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <style>
+        .logo_image {
+            display: block;
+            margin: 0 auto;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            
+        
+            border: 3px solid #fff;
+        }
+
+         #navigation {
+            height: 200px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        #greetings h5 {
+            letter-spacing: 10px;
+            font-size: 18px;
+            margin: 0;
+        }
+
+        #greetings p {
+            font-size: 22px;
+        }
+</style>
+
 </head>
 
 <body>
+    <div class="container">
+        <div class="top">
+            <div id="greetings">
+                    {{#each results}}
+                
+                    <!-- ADD COMPANY LOGO -->
+                        {{#if this.cLogo}}
+                            <img class="logo_image" src="/public/upload/companyLogo/{{this.cLogo}}" alt="User Profile">
+                        {{else}} 
+                            <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+                        {{/if}}
+                {{/each}}
+
+                <p><b>You are log in as {{activeUserFullName}}</b></p>
+                <h5>Settings</h5>
+            </div>
+        </div>
+            <div id="navigation">
+                <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                    <img src="/img/homeIcon.png">
+                    <span>HOME</span>
+                </button>
+               
+                
+                <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                    <img src="/img/logOutIcon.png">
+                    <span>LOG OUT</span>
+                </button>
+            </div>
+
+        {{#if alert}}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{alert}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {{/if}}
+
     <div class = "user-detail">
-        <form action="/editUser" method="POST">
-            <label> First Name </label>
-            <input type="text" placeholder="Enter First Name" name="firstName" required><br>
+        
+         {{#each results}}
+            <form action="/editUser" method="POST">
+               
+                <label> First Name </label>
+                <input type="text" placeholder="Enter First Name" name="updateFN" value="{{this.uFName}}" required><br>
 
-            <label> Last Name </label>
-            <input type="text" placeholder="Enter Last Name" name="lastName" required><br>
+                <label> Last Name </label>
+                <input type="text" placeholder="Enter Last Name" name="updateLN" value="{{this.uLName}}" required><br>
+                
+                <label> Email </label>
+                <input type="text" placeholder="Enter Email" name="updateEmail" value="{{this.uEmail}}" required><br>
+
+                <label> Password </label>
+                <input type="text" placeholder="Enter Password" name="updatePassword" value="{{this.uPass}}" required><br>
+
+                <label> Role </label>
+                
+                <select id="selectRole" name="userRole" required>
+                    <option value="{{this.uRole}}">Select Role</option>
+                    {{#each roles}}
+                        <option value="{{this}}">{{this}}</option>
+                    {{/each}}
+                </select>
+
+                <br><label> Job </label>
+                <input type="text" placeholder="Enter Job" name="updateJob" value="{{this.uJob}}" required><br>
+                
+                 <label> About </label>
+                <input type="text" placeholder="About" name="updateAbout" value="{{this.uAbout}}" required><br>
+
+                <input type="submit" value="UPDATE" class="btn btn-primary">
+                 
+           
             
-            <label> Email </label>
-            <input type="text" placeholder="Enter Email" name="email" required><br>
-
-            <label> Password </label>
-            <input type="text" placeholder="Enter Password" name="password" required><br>
-
-            <label> Role </label>
-            <input type="text" placeholder="Enter Role" name="password" required><br>
-
-            <label> Job </label>
-            <input type="text" placeholder="Enter Job" name="password" required><br>
-
-            <!-- <label> Title </label>
-            <input type="text" placeholder="Enter Title" name="password" required value={{newUserPW}}>
-            
-            <label> About </label>
-            <input type="text" placeholder="About" name="password" required value={{newUserPW}}> -->
+          
 
         
         
-        </form>
+            </form>
+        {{/each}}
+       
     </div>
 </body>

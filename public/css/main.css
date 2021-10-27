@@ -126,7 +126,8 @@ card_about { font-style: italic;}
 }
 #left {
     display: inline;
-    width: 60%;
+    width: 50%;
+    height:100%;
     box-sizing: border-box;
     float: left;
 }

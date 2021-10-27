@@ -94,57 +94,7 @@
             font-size: 20px;
         }
 
-        #welcomeText{
-            position: absolute;
-            left: 50%;
-            top: 10%;
-            transform: translate(-50%, -50%);
-            font-size: 25px;
-        }
-
-        #createNewCourse {
-            width: 100%;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #createNewCourse #newCourseBtn {
-            width: 300px;
-            height: 200px;
-            background-color: #ffda62;
-            border: 0;
-            box-shadow: 0;
-            padding: 20px;
-            font-weight: bold;
-            border-radius: 20px;
-            font-size: 20px;
-            box-shadow: 5px 5px 20px #797979;
-        }
-
-        #existingCourses {
-            margin-top: 20px;
-            padding: 20px 30px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-            text-align: center;
-        }
-
-        #existingCourses h5 {
-            color: #1b1b1b;
-            letter-spacing: 10px;
-            font-size: 35px;
-            margin: 0px 0px 30px 0px;
-        }
-
-        #dropdownList {
-            width: 90%;
-        }
-
+      
         select{
             display: block;
             margin-right: 20vw;
@@ -190,74 +140,9 @@
                 font-weight: bold;
             }
 
-            .courseContainer button {
-                height: 60px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-                border: 0;
-            }
+          
 
-            .courseContainer #selectCourseBtn {
-                width: 85%;
-                background-color: #FFFFFF;
-                border-top-right-radius: 10px;
-                border-bottom-right-radius: 10px;
-            }
-
-            .courseContainer #deleteCourseBtn {
-                width: 8%;
-                background-color: #71b9ff;
-                border-top-left-radius: 10px;
-                border-bottom-left-radius: 10px;
-            }
-
-            .courseContainer #deleteCourseBtn:hover {
-                background-color: #161616;
-                color: #FFFFFF;
-            }
-
-            .courseContainer #selectCourseBtn:hover {
-                background-color: #fbd453;
-            }
-
-        /* Courses */
-        .courseList {
-            width: 100%;
-            height: 100%;
-            overflow-y: scroll;
-        }
-
-        .courseList .courseContainer {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .bottom #createNewCourseBtn {
-            background-color: transparent;
-            border: 0;
-            padding: 15px;
-            font-weight: bold;
-            font-size: 1.6em;
-            cursor: pointer;
-        }
-
-        .bottom #createNewCourseBtn:hover {
-            color: #a298db;
-        }
-
-        ::-webkit-scrollbar {
-            background: #FFFFFF;
-            border-radius: 20px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #a298db;
-            border-radius: 20px;
-        }
+            
             
         /* Start Main */
         h1 {
@@ -265,7 +150,10 @@
         }
 
         /*Profile Card  */
-       img {width:100%;} 
+       img {
+           width: 30%;
+           float : left;
+           } 
 
        .wrapper {
            display: grid;
@@ -369,17 +257,21 @@
 
         <div class="top">
             <div id="greetings">
-                <h5>{{companyName}}</h5>
+                {{#each results}}
+                <h5>Welcome to {{this.cName}}</h5>
+                 {{/each}}
                 <!-- ADD COMPANY LOGO -->
+
                 {{#each results}}
                      {{#if this.cLogo}}
-                        <img class="logo_image" src="/public/upload/profilePhoto/{{this.cLogo}}" alt="User Profile">
+                        <img class="logo_image" src="/public/upload/companyLogo/{{this.cLogo}}" alt="User Profile">
                      {{else}} 
-                        <img class="logo_image" src="/public/upload/profilePhoto/defaultimage.png" alt="User Profile">
+                        <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
                       {{/if}}
                 {{/each}}
-                <p><b>Welcome, {{activeUserFullName}}.</b></p>
-                <h6>{{todayDate}}</h6>
+
+                <p><b>You are log in as {{activeUserFullName}}.</b></p>
+                <h6>Today: {{todayDate}}</h6>
                 <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p>
             </div>
         </div>
@@ -390,6 +282,15 @@
                 <img src="/img/homeIcon.png">
                 <span>HOME</span>
             </button>
+            <button type="button" class="navigation-buttons" onclick="location.href = '/editUser'">
+                <img src="/img/settings.png">
+                <span>Edit Account</span>
+                
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
+
             {{#if addPermission}}
             <button type="button" class="navigation-buttons" onclick="location.href = '/addUser'">
                 <img src="/img/adduser.png">
@@ -400,14 +301,7 @@
                 <span>Add Program</span>
             </button>
             {{/if}}
-            <button type="button" class="navigation-buttons" onclick="location.href = '/editUser'">
-                <img src="/img/settings.png">
-                <span>Edit Account</span>
-                
-            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
-                <img src="/img/logOutIcon.png">
-                <span>LOG OUT</span>
-            </button>
+            
         </div>
 
         {{!-- profile card --}}
