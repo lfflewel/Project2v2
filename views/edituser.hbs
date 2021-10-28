@@ -97,10 +97,11 @@
 
                 <label> Role </label>
                 
-                <select id="selectRole" name="userRole" required> // still working on it
-                    <option value="{{this.uRole}}">Select Role</option>
-                    {{#each roles}}
-                        <option value="{{this}}">{{this}}</option>
+                <select id="selectRole" name="updateRole" value="{{this.uRole}}" required>
+                    <option value="{{this.uRole}}">{{this.uRole}}</option> 
+                    {{!-- access the parent in handlebars --}}
+                    {{#each ../roles}} 
+                        <option value="{{this.uRole}}">{{this}}</option>
                     {{/each}}
                 </select>
 
