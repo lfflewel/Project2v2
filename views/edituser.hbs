@@ -80,46 +80,45 @@
 
     <div class = "user-detail">
         
-         {{#each results}}
-            <form action="/editUser" method="POST">
-               
+
+            <form action="/updateUser" method="POST">
+        {{#each results}}
                 <label> First Name </label>
                 <input type="text" placeholder="Enter First Name" name="updateFN" value="{{this.uFName}}" required><br>
 
                 <label> Last Name </label>
                 <input type="text" placeholder="Enter Last Name" name="updateLN" value="{{this.uLName}}" required><br>
                 
-                <label> Email </label>
-                <input type="text" placeholder="Enter Email" name="updateEmail" value="{{this.uEmail}}" required><br>
-
                 <label> Password </label>
                 <input type="text" placeholder="Enter Password" name="updatePassword" value="{{this.uPass}}" required><br>
-
-                <label> Role </label>
-                
-                <select id="selectRole" name="userRole" required> // still working on it
-                    <option value="{{this.uRole}}">Select Role</option>
-                    {{#each roles}}
-                        <option value="{{this}}">{{this}}</option>
-                    {{/each}}
-                </select>
-
-                <br><label> Job </label>
+                 
+                <label> Job </label>
                 <input type="text" placeholder="Enter Job" name="updateJob" value="{{this.uJob}}" required><br>
                 
-                 <label> About </label>
+                <label> About </label>
                 <input type="text" placeholder="About" name="updateAbout" value="{{this.uAbout}}" required><br>
+                
+                <label> Role </label>
+               
+                <select id="selectRole" name="updateRole" required> // still working on it
+                    <option value="0">{{this.uRole}}</option>
+                {{/each}} 
+                 
+                {{#each roles}}
+                    <option value="{{this}}">{{this}}</option>
+                {{/each}}
+                </select>
 
                 <input type="submit" value="UPDATE" class="btn btn-primary">
-                 
-           
+ 
+
             
           
 
         
         
             </form>
-        {{/each}}
+     
        
     </div>
 </body>
