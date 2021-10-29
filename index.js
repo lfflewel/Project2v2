@@ -400,6 +400,7 @@ app.get('/editUser', function(req, res) {
     if (req.session.loggedin) {
         pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
             if (!err) {
+                console.log(res)
                 res.render('editUser', {results, activeUserFullName, companyName, companyLogo, roles, todayDate});
             }
             else {
@@ -410,18 +411,19 @@ app.get('/editUser', function(req, res) {
     };
 });
 
-app.post('/editUser', function (req, res) {
+  
+
+app.post('/updateUser', function (req, res) {
     if (req.session.loggedin) {
         let updateUserFName = req.body.updateFN;
         let updateUserLName = req.body.updateLN;
-        let updateUserEmail = req.body.updateEmail;
         let updateUserPW = req.body.updatePassword;
         let updateUserRole = req.body.updateRole;
         let updateUserJob = req.body.updateJob;
         let updateUserAbout = req.body.updateAbout;
 
     
-        pool.query(`UPDATE User SET uFName=?, uLName=?, uEmail=?, uPass=?, uRole=?, uJob=?, uAbout=?  WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserEmail, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, activeUserId], function(err, results) {
+        pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?  WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, activeUserId], function(err, results) {
             if(!err) {
                 pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
                     if(!err) {
