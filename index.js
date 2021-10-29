@@ -102,6 +102,7 @@ let newUserPW;
 let newUserRole;
 let newUserJob;
 let newUserAbout;
+let activeProgramId
 
 
 
@@ -449,3 +450,31 @@ app.post('/updateUser', function (req, res) {
 
 
 /*------------------------------END EDIT USER-------------------------------*/
+
+/* -- Programs PAGE ------------------------------------------- */
+app.get('/newProgram', function(req, res) {
+    if (req.session.loggedin) {
+        res.render('newProgram');
+    }
+});
+
+// CREATE A NEW Program
+app.post('/newProgram', function(req, res) {
+    if (req.session.loggedin) {
+        let programName =  req.body.programName;
+        let programDesc = req.body.programDesc;
+
+                pool.query(`INSERT INTO Program (pName, pDesc, cId) VALUES ("${programName}", "${programDesc}", ${companyId})`, function (err, results) {
+                    if (err) {
+                    console.log(err);
+                    }
+                    else {
+                        console.log("Program Inserted");
+                        activeProgramId = results.Id;
+                        res.redirect('/newProgram');
+                    }
+                })
+            
+
+    }
+});
