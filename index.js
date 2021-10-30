@@ -355,8 +355,8 @@ app.post('/createUser', function (req, res) {
                     console.log(`New User Id: ${newUserId}`);
                     
                 }
-                res.redirect('addUser');
-                // res.render('addUser', {results, activeUserFullName, companyName, companyLogo, roles, alert:'User added successfully.' });
+                
+                res.render('addUser', {results, activeUserFullName, companyName, companyLogo, roles, alert:'User added successfully.' });
             }); 
         }; 
     }); 
