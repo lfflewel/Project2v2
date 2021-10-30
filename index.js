@@ -143,7 +143,7 @@ app.post('/getStarted', function (req, res) {
 // create a company info
 app.post('/initCompany', function (req, res) {
 	companyName = req.body.companyName;
-	companyLogo = req.files.photo;
+	companyLogo = req.files.file;
 	adminFName = req.body.adminFName;
 	adminLName = req.body.adminLName;
 	adminJob = req.body.adminJob;
@@ -163,7 +163,7 @@ app.post('/initCompany', function (req, res) {
                       return res.status(400).send('No files were uploaded.')
                    }
 
-            	   uploadPath = __dirname + '/public/upload/companyLogo' + companyLogo.name;
+            	   uploadPath = __dirname + '/public/upload/companyLogo/' + companyLogo.name;
                    console.log(companyLogo);
                    
                    // user mv(to place file on the server)
@@ -344,8 +344,8 @@ app.post('/createUser', function (req, res) {
         }
         else {
             //save dato into the database
-            pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, uPhoto, ucId) VALUES 
-                ("${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserPhoto.name}", "${companyId}")`, function (err, results) {
+            pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, uAbout, uPhoto, ucId) VALUES 
+                ("${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserAbout}","${newUserPhoto.name}", "${companyId}")`, function (err, results) {
                 if (err) {
                     console.log(err);
                 }
@@ -355,7 +355,8 @@ app.post('/createUser', function (req, res) {
                     console.log(`New User Id: ${newUserId}`);
                     
                 }
-                res.render('addUser', {results, activeUserFullName, companyName, companyLogo, roles, alert:'User added successfully.' });
+                res.redirect('addUser');
+                // res.render('addUser', {results, activeUserFullName, companyName, companyLogo, roles, alert:'User added successfully.' });
             }); 
         }; 
     }); 
