@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,25 +18,29 @@
             margin-right: 0px;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
         }
+
         body {
-            background: linear-gradient(149deg, rgba(185,168,255,1) 0%, rgba(214,234,255,1) 48%, rgba(255,225,124,1) 100%);
+            background: linear-gradient(149deg, rgba(185, 168, 255, 1) 0%, rgba(214, 234, 255, 1) 48%, rgba(255, 225, 124, 1) 100%);
             margin: 0;
             display: flex;
         }
+
         p {
             margin-bottom: 0;
             font-family: 'Montserrat-Thin', sans-serif;
         }
+
         ul {
             list-style-type: none;
             margin: 0;
             padding: 0;
         }
 
-        .container{
+        .container {
             width: 80%;
             border-radius: 30px;
             height: 93vh;
@@ -68,7 +73,7 @@
             border-radius: 20px;
             color: rgb(22, 22, 22);
             width: 100%;
-            
+
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -94,8 +99,8 @@
             font-size: 20px;
         }
 
-      
-        select{
+
+        select {
             display: block;
             margin-right: 20vw;
             font-size: 20px;
@@ -115,116 +120,127 @@
         }
 
 
-            #navigation button {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                padding: 10px;
-                width: 130px;
-                height: 130px;
-                border-radius: 15px;
-                background-color: transparent;
-                border: 0;
-                outline: 0;
-                cursor: pointer;
-            }
+        #navigation button {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            width: 130px;
+            height: 130px;
+            border-radius: 15px;
+            background-color: transparent;
+            border: 0;
+            outline: 0;
+            cursor: pointer;
+        }
 
-            #navigation button img {
-                width: 60px;
-                margin-bottom: 10px;
-            }
+        #navigation button img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
 
-            #navigation button span {
-                font-size: 15px;
-                font-weight: bold;
-            }
+        #navigation button span {
+            font-size: 15px;
+            font-weight: bold;
+        }
 
-          
 
-            
-            
+
+
+
         /* Start Main */
         h1 {
             margin: auto;
         }
 
         /*Profile Card  */
-       img {
-           width: 30%;
-           float : left;
-           } 
+        img {
+            width: 30%;
+            float: left;
+        }
 
-       .wrapper {
-           display: grid;
-           place-items: center;
-           height: 100vh;
-       }
+        .wrapper {
+            display: grid;
+            place-items: center;
+            height: 100vh;
+        }
 
-       .btn {
-           border: none;
-           color:#fff;
-           padding: 15px 32px;
-           text-align: center;
-           text-decoration: none;
-           display: inline-block;
-           font-style: 16px;
-           margin: 4px 2px;
-           cursor: pointer;
-           width: 100%;
-           border-radius: 3px;
-       }
+        .btn {
+            border: none;
+            color: #fff;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-style: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 3px;
+        }
 
-       .btn-primary {background-color: #008CBA;}
+        .btn-primary {
+            background-color: #008CBA;
+        }
 
-       .card{
-           text-align: center;
-           width: 400px;
-           padding: 20px;
-           border-radius: 5px;
-           box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0,0,0,0.13);
-           background-color: #fff;        
-    }
-    .logo_image {
+        .card {
+            text-align: center;
+            width: 400px;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0, 0, 0, 0.13);
+            background-color: #fff;
+        }
+
+        .logo_image {
             display: block;
             margin: 0 auto;
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            
-           
+
+
             border: 3px solid #fff;
         }
-    card_image {
+
+        card_image {
             display: block;
-            margin: 0 auto;  
+            margin: 0 auto;
             width: 100px;
             height: 100px;
             border-radius: 50%;
             overflow: hidden;
             object-fit: cover;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0,0,0,0.13);
-            border: 3px solid #fff;  
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0), 0 6px 36px rgba(0, 0, 0, 0.13);
+            border: 3px solid #fff;
         }
-    card_image{
-        width: 50%;
-    }
 
-    card_name { margin: 0; }
+        card_image {
+            width: 50%;
+        }
 
-    card_job { color: #6E8192; }
+        card_name {
+            margin: 0;
+        }
 
-    card_about { font-style: italic;}
+        card_job {
+            color: #6E8192;
+        }
 
-    /* fileUpload */
-.file {
-    opacity: 0;
-    width: 0.1px;
-    height: 0.1px;
-    position: absolute;
-}
+        card_about {
+            font-style: italic;
+        }
 
-.fileUpload  {
+        /* fileUpload */
+        .file {
+            opacity: 0;
+            width: 0.1px;
+            height: 0.1px;
+            position: absolute;
+        }
+
+        .fileUpload {
             display: block;
             position: relative;
             width: 200px;
@@ -239,43 +255,39 @@
             font-weight: bold;
             cursor: pointer;
             transition: transform .2s ease-out;
-            
-}
 
-.container-fileUpload{
-    justify-content: space-between;
-}
-    
-    
+        }
+
+        .container-fileUpload {
+            justify-content: space-between;
+        }
     </style>
 
     <script type=text/jstl></script>
 
 </head>
+
 <body>
     <div class="homecontainer">
 
         <div class="top">
             <div id="greetings">
-                {{#each results}}
-                <h5>Welcome to {{this.cName}}</h5>
-                 {{/each}}
-                <!-- ADD COMPANY LOGO -->
 
-                {{#each results}}
-                     {{#if this.cLogo}}
-                        <img class="logo_image" src="/public/upload/companyLogo/{{this.cLogo}}" alt="User Profile">
-                     {{else}} 
-                        <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
-                      {{/if}}
-                {{/each}}
+                <h5>{{companyName}}</h5>
+
+                {{#if companyLogo}}
+                <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+                {{else}}
+                <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+                {{/if}}
+
 
                 <p><b>You are log in as {{activeUserFullName}}.</b></p>
                 <h6>Today: {{todayDate}}</h6>
-                <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p>
+                {{!-- <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p> --}}
             </div>
         </div>
-        
+
         {{!-- navigation --}}
         <div id="navigation">
             <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
@@ -285,90 +297,71 @@
             <button type="button" class="navigation-buttons" onclick="location.href = '/editUser'">
                 <img src="/img/settings.png">
                 <span>Edit Account</span>
-                
-            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
-                <img src="/img/logOutIcon.png">
-                <span>LOG OUT</span>
-            </button>
 
-            {{#if addPermission}}
-            <button type="button" class="navigation-buttons" onclick="location.href = '/addUser'">
-                <img src="/img/adduser.png">
-                <span>Add User</span>
-            </button>
-            <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
-                <img src="/img/addprogram.png">
-                <span>Add Program</span>
-            </button>
-            {{/if}}
-            
+                <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                    <img src="/img/logOutIcon.png">
+                    <span>LOG OUT</span>
+                </button>
+
+                {{#if addPermission}}
+                <button type="button" class="navigation-buttons" onclick="location.href = '/addUser'">
+                    <img src="/img/adduser.png">
+                    <span>Add User</span>
+                </button>
+
+                <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
+                    <img src="/img/addprogram.png">
+                    <span>Add Program</span>
+                </button>
+                {{/if}}
+
         </div>
 
         {{!-- profile card --}}
-        <div class= "card wrapper" id="left">
+        <div class="card wrapper" id="left">
             {{#each results}}
 
             {{#if this.uPhoto}}
-                <img class="card_image" src="/public/upload/profilePhoto/{{this.uPhoto}}" alt="User Profile">
-            {{else}} 
-                <img class="card_image" src="/public/upload/profilePhoto/defaultimage.png" alt="User Profile">
+            <img class="card_image" src="/public/upload/profilePhoto/{{this.uPhoto}}" alt="User Profile">
+            {{else}}
+            <img class="card_image" src="/public/upload/profilePhoto/defaultimage.png" alt="User Profile">
             {{/if}}
-                <h1 class="card_name">{{this.uFName}}  {{this.uLName}}</h1>
-                <div class="card_job">{{this.uJob}}</div>
-                <p class="card_about">{{this.uAbout}}</p>
+            <h1 class="card_name">{{this.uFName}} {{this.uLName}}</h1>
+            <div class="card_job">{{this.uJob}}</div>
+            <p class="card_about">{{this.uAbout}}</p>
         </div>
+        {{/each}}
+
         {{!-- right side buttons --}}
         <div class="profile-btns" id="right">
-            {{#if "Mentee"}}
-                <button type="button" class="btn btn-primary" onclick="location.href = '/profile'" >My Mentor</button>
-            {{else}}
-                <button type="button" class="btn btn-primary">My Mentees</button>
-            {{/if}}
-                <button type="button" class="btn btn-primary" onclick="location.href = '/userProgram'">My Program</button>
-                
-                 <div>
-               
-                        <form  action="/updateProfilePhoto" method="POST" enctype="multipart/form-data">
-                            <div class="input-box">
-                                <p>Upload photo</p>
-                                    <div class="fileUpload">                                
-                                        <input type="file" id="file" name="file" class="file" accept="image/*">
-                                        <label for="file">Select file</label>
-                                    </div>
-                                    <div class="button">
-                                    <input type="submit" class="btn btn-primary">
-                                </div>
-                            </div>
-                        </form>
-                    
-        {{/each}}
-        </div>
-    </div>      
-  <script src="index.js"></script> 
-</body>
-</html>        
+            {{#if isMentee}}
+            <button type="button" class="btn btn-primary" onclick="location.href = '/profile'">My Mentor</button>
+            <button type="button" class="btn btn-primary" onclick="location.href = '/userProgram'">My Program</button>
 
-            {{!-- {{!-- {{#if activeUserPhoto}}
-                <img class="card_image" src="{{activeUserPhoto}}" alt="User Profile">
-            {{else}} 
-                <img class="card_image" src="\defaultimage.png" alt="User Profile">
+            {{else if isMentor}}
+            <button type="button" class="btn btn-primary">My Mentees</button>
+            <button type="button" class="btn btn-primary" onclick="location.href = '/userProgram'">My Program</button>
             {{/if}}
-                <h1 class="card_name">{{activeUserPhoto}}</h1>
-                <div class="card_job">{{activeUserJob}}</div>
-                <p class="card_about">{{activeUserAbout}}</p>
-            {{/each}}
-                <button type="button" class="btn btn-primary">My Program</button>
-                <button type="button" class="btn btn-primary">My Mentor</button>
-            
-        
-        <!-- <div class="bottom">
-            <button type="button" class="navigation-buttons" id="createNewUserBtn" onclick="location.href = '/addUsers'">
-                ADD A NEW USER
-            </button>
-            
+
+            <div>
+
+                <form action="/updateProfilePhoto" method="POST" enctype="multipart/form-data">
+                    <div class="input-box">
+                        <p>Upload photo</p>
+                        <div class="fileUpload">
+                            <input type="file" id="file" name="file" class="file" accept="image/*">
+                            <label for="file">Select file</label>
+                        </div>
+                        <div class="button">
+                            <input type="submit" class="btn btn-primary">
+                        </div>
+                    </div>
+                </form>
+
+
+            </div>
         </div>
-         <div class="right">
-           
-        </div>
-    </div> 
-   --}}
+        <script src="index.js"></script>
+</body>
+
+</html>

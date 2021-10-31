@@ -93,6 +93,8 @@ let addPermission = false;
 let imHome = true;
 let todayDate = new Date().toLocaleString();
 let activeUserPhoto;
+let isMentee = false; 
+let isMentor = false;
 // let newUserPhoto;
 
 let newUserFName;
@@ -207,7 +209,7 @@ app.post('/login', function(req, res) {
 
         // call to db --> pass in the useremail && passwod as the parameters [] for the QUERY string below
         // inside the query statement, we also define a function that will handle the error, results from the SQL query
-        pool.query('SELECT * FROM User WHERE uEmail = ? AND uPass = ?', [useremail, password], function (err, results) {
+        pool.query('SELECT * FROM User JOIN Company On cId=ucId WHERE uEmail = ? AND uPass = ?', [useremail, password], function (err, results) {
             if (!err);
 
             if (results.length > 0) {
@@ -230,6 +232,8 @@ app.post('/login', function(req, res) {
                 activeUserAbout = results[0].uAbout;
                 activeUserJob = results[0].userJob
                 companyId = results[0].ucId;
+                companyName = results[0].cName;
+                companyLogo = results[0].cLogo;
                 
                 activeUserFullName = activeUserFName + ' ' + activeUserLName;
 
@@ -240,8 +244,22 @@ app.post('/login', function(req, res) {
                 // Establish permission to add users and programs
                 if (activeUserRole == "Admin" || activeUserRole == "Program Manager") {
                     addPermission = true;
+                    isMentee = false; 
+                    isMentor = false;
                 }
-                res.redirect('/homepage');
+                if (activeUserRole == "Mentee") {
+                    addPermission = false;
+                    isMentee = true; 
+                    isMentor = false;
+                }
+                if (activeUserRole == "Mentor") {
+                    addPermission = false;
+                    isMentee = false; 
+                    isMentor = true;
+                }
+
+                // res.redirect('/homepage');
+                res.render('homepage', {results, todayDate, companyName, companyLogo, activeUserFullName, addPermission, isMentee, isMentor, imHome })
             }
             else {
                     res.redirect('/invalidLoginScreen');
