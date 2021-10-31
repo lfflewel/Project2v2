@@ -107,10 +107,6 @@ let newUserAbout;
 let activeProgramId
 
 
-
-
-
-
 /*---------------------------------------------------------------*/
 
 /* -- INVALID LOG IN SCREEN ---------------------------------- */
@@ -234,6 +230,7 @@ app.post('/login', function(req, res) {
                 companyId = results[0].ucId;
                 companyName = results[0].cName;
                 companyLogo = results[0].cLogo;
+                activeUserMentorId = results[0].mentorId;
                 
                 activeUserFullName = activeUserFName + ' ' + activeUserLName;
 
@@ -280,6 +277,8 @@ app.post('/login', function(req, res) {
 app.get('/logout', function (req, res) {
     req.session.destroy();
     addPermission = false;
+    isMentor = false;
+    isMentee = false;
     res.redirect('/');
 });
 
@@ -291,9 +290,10 @@ app.get('/homepage', function(req, res) {
         pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
             console.log(results);
             if (err) throw err;
-                 
-               
-            res.render('homepage', {results, activeUserFullName, addPermission, imHome, companyName, companyLogo, todayDate});
+
+            imHome = true;
+              
+            res.render('homepage', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
         });
     };
 });
@@ -310,6 +310,8 @@ app.get('/addUser', function (req, res) {
         pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
             console.log(results);
             if (err) throw err;
+
+
             res.render('addUser', {results, activeUserFullName, addPermission, roles, imHome, companyName, companyLogo, todayDate});
         });
     }
@@ -328,6 +330,7 @@ app.post('/createUser', function (req, res) {
     let newUserPhoto;
     let uploadPath;
 
+    // Handle File Upload
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.')
     };
@@ -340,6 +343,9 @@ app.post('/createUser', function (req, res) {
     newUserPhoto.mv(uploadPath, function (err) {
         if (err) return res.status(500).send(err);
     });
+    // End File Section
+
+
 
     console.log(newUserFName);
     console.log(newUserLName);
@@ -366,12 +372,9 @@ app.post('/createUser', function (req, res) {
                     console.log(err);
                 }
                 else {
-                    
                     var newUserId = results.insertId
                     console.log(`New User Id: ${newUserId}`);
-                    
                 }
-                
                 res.render('addUser', {results, activeUserFullName, companyName, companyLogo, roles, alert:'User added successfully.' });
             }); 
         }; 
@@ -418,8 +421,18 @@ app.get('/editUser', function(req, res) {
     if (req.session.loggedin) {
         pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
             if (!err) {
-                console.log(res)
-                res.render('editUser', {results, activeUserFullName, companyName, companyLogo, roles, todayDate});
+                console.log('results', results) 
+                let mentors = {
+
+                };
+
+                    // get list of Mentors for Select
+                    pool.query('SELECT * FROM User WHERE uRole = "Mentor"',  function (err, mentors) {
+                        if (!err);
+                        console.log(mentors);
+
+                        res.render('editUser', {results, mentors, isMentee, isMentor, activeUserFullName, companyName, companyLogo, roles, todayDate});
+                    });
             }
             else {
                 console.log(err)
@@ -439,20 +452,24 @@ app.post('/updateUser', function (req, res) {
         let updateUserRole = req.body.updateRole;
         let updateUserJob = req.body.updateJob;
         let updateUserAbout = req.body.updateAbout;
-
-    
-        pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?  WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, activeUserId], function(err, results) {
+        let updateUserMentor = req.body.updateMentor;
+     
+        pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?, mentorId=? WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, updateUserMentor, activeUserId], function(err, results) {
             if(!err) {
                 pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
                     if(!err) {
-                       
-                        res.render('editUser', {results, activeUserFullName, companyName, companyLogo, roles, todayDate, alert: 'User Updated Successfully'});
-            
+
+                    // get mentorId
+                    pool.query('SELECT * FROM User as mentor WHERE uId = ?', [updateUserMentor], function (err, mentors) {
+                        if (!err);
+                        activeUserMentorId = mentors[0].uId;
+                        console.log(activeUserMentorId)
+                        res.redirect('/homepage')
+                     });
                     }
                     else {
                         console.log(err)
                     }
-                    
                     console.log('The data from user table : \n', results)
                 })
             }
@@ -461,7 +478,7 @@ app.post('/updateUser', function (req, res) {
             }
     
          })
-        }
+    }
 })
 
 
@@ -491,7 +508,19 @@ app.post('/newProgram', function(req, res) {
                         res.redirect('/newProgram');
                     }
                 })
-            
-
     }
+});
+
+/*----------------My Mentee Button------------*/
+
+app.get('/myMentor', function(req, res) {
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM User WHERE uId = ?`, [activeUserMentorId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+            
+            imHome = false;
+            res.render('homepage', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+        });
+    };
 });

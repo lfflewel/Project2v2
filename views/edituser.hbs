@@ -7,16 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <style>
-        .logo_image {
-            display: block;
-            margin: 0 auto;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            
-        
-            border: 3px solid #fff;
-        }
+
 
          #navigation {
             height: 200px;
@@ -26,7 +17,7 @@
             align-items: center;
             width: 100%;
         }
-
+/*
         #greetings h5 {
             letter-spacing: 10px;
             font-size: 18px;
@@ -36,6 +27,7 @@
         #greetings p {
             font-size: 22px;
         }
+*/
 </style>
 
 </head>
@@ -43,33 +35,35 @@
 <body>
     <div class="container">
         <div class="top">
-            <div id="greetings">
-                    {{#each results}}
-                
-                    <!-- ADD COMPANY LOGO -->
-                        {{#if this.cLogo}}
-                            <img class="logo_image" src="/public/upload/companyLogo/{{this.cLogo}}" alt="User Profile">
-                        {{else}} 
-                            <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
-                        {{/if}}
-                {{/each}}
+           <div id="greetings">
 
-                <p><b>You are log in as {{activeUserFullName}}</b></p>
-                <h5>Settings</h5>
+                <h5>{{companyName}}</h5>
+
+                {{#if companyLogo}}
+                <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+                {{else}}
+                <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+                {{/if}}
+
+
+                <p><b>You are log in as {{activeUserFullName}}.</b></p>
+                <h6>Today: {{todayDate}}</h6>
+                {{!-- <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p> --}}
             </div>
+      </div>
+
+        <div id="navigation">
+            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                <img src="/img/homeIcon.png">
+                <span>HOME</span>
+            </button>
+            
+            
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
         </div>
-            <div id="navigation">
-                <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
-                    <img src="/img/homeIcon.png">
-                    <span>HOME</span>
-                </button>
-               
-                
-                <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
-                    <img src="/img/logOutIcon.png">
-                    <span>LOG OUT</span>
-                </button>
-            </div>
 
         {{#if alert}}
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -97,26 +91,35 @@
                 
                 <label> About </label>
                 <input type="text" placeholder="About" name="updateAbout" value="{{this.uAbout}}" required><br>
-                
+
+
+            <div>
                 <label> Role </label>
-               
                 <select id="selectRole" name="updateRole" required> // still working on it
-                    <option value="0">{{this.uRole}}</option>
-                {{/each}} 
-                 
-                {{#each roles}}
-                    <option value="{{this}}">{{this}}</option>
-                {{/each}}
+                        <option value="0">{{this.uRole}}</option>
+            {{/each}}
+
+                    {{#each roles}}
+                        <option value="{{this}}">{{this}}</option>
+                    {{/each}}
                 </select>
+            </div>
+            {{#if isMentee}}
+                <div>
+                    <label> Mentor </label>
+            {{#each results}}
+                    <select id="selectMentor" name="updateMentor" required> // still working on it
+                        <option value="0">{{this.mentorId}}</option>
+            {{/each}}
+                    {{#each mentors}}
+                        <option value="{{this.uId}}">{{this.uFName}} {{this.uLName}}</option>
+                    {{/each}} 
+                    </select>
+                </div>
+            {{/if}}
 
                 <input type="submit" value="UPDATE" class="btn btn-primary">
- 
-
-            
-          
-
-        
-        
+       
             </form>
      
        
