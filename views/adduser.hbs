@@ -263,49 +263,46 @@
 <body>
     <div class="container">
         <div class="top">
-            <div id="greetings">
-                    {{#each results}}
-                
-                    <!-- ADD COMPANY LOGO -->
-                        {{#if this.cLogo}}
-                            <img class="logo_image" src="/public/upload/companyLogo/{{this.cLogo}}" alt="User Profile">
-                        {{else}} 
-                            <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
-                        {{/if}}
-                {{/each}}
+            <div id="greetings"
 
-                <p><b>You are log in as {{activeUserFullName}}</b></p>
+                <h5>{{companyName}}</h5>
+                  {{!-- Company Logo --}}
+
+                {{#if companyLogo}}
+                    <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+                {{else}}
+                    <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+                {{/if}}
+
+ 
+                <p><b>You are log in as {{activeUserFullName}}.</b></p>
+                <h6>Today: {{todayDate}}</h6>
                 <h5>Add User</h5>
             </div>
         </div>
-            <div id="navigation">
-                <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
-                    <img src="/img/homeIcon.png">
-                    <span>HOME</span>
-                </button>
-                {{!-- <button type="button" class="navigation-buttons" onclick="location.href = '/addUser'">
-                    <img src="/img/adduser.png">
-                    <span>Add User</span>
-                </button>  --}}
-                
-                <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
-                    <img src="/img/logOutIcon.png">
-                    <span>LOG OUT</span>
-                </button>
-            </div>
-       
 
-
-        {{#if alert}}
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{alert}}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
-            </div>
-        {{/if}}
-
-
-        <div class="bottom">
+        {{!-- Navigation Buttons --}}
+        <div id="navigation">
+            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                <img src="/img/homeIcon.png">
+                <span>HOME</span>
+            </button>
+            <button type="button" class="navigation-buttons" onclick="location.href = '/addUser'">
+                <img src="/img/adduser.png">
+                <span>Add User</span>
+            </button> 
             
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
+        </div>
+
+
+
+        {{!-- Form Section--}}
+         <div class="bottom">
+
             <form action="/createUser" method="POST" enctype="multipart/form-data">  
                 <p>User Information</p>
                 <input type="text" name="userFName" class="input-box" placeholder="First Name" required><br>
@@ -321,6 +318,7 @@
                         <option value="{{this}}">{{this}}</option>
                     {{/each}}
                 </select>
+
                     <div class="input-box">
                         <p>Upload photo</p>
                             <div class="fileUpload">                                
@@ -332,10 +330,18 @@
                         </div>
                     </div>
                         <p><b>{{newUserMessage}}</b></p>
+                                {{!-- Alert --}}
+                        {{#if alert}}
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                {{alert}}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {{/if}}
+                        
                     </div>
             </form>
         </div>
-    </section>   
+    {{!-- </section>    --}}
 </div>
     <script src="index.js"></script> 
 </body>
