@@ -236,16 +236,12 @@ app.post('/login', function(req, res) {
                 console.log(`User ID: ${activeUserId}`);
                 console.log(`User Role: ${activeUserRole}`);
                 
-                
-
-                
-                
                
                 // Establish permission to add users and programs
                 if (activeUserRole == "Admin" || activeUserRole == "Program Manager") {
                     addPermission = true;
                 }
-                res.redirect('/homepage')
+                res.redirect('/homepage');
             }
             else {
                     res.redirect('/invalidLoginScreen');
@@ -277,6 +273,8 @@ app.get('/homepage', function(req, res) {
         pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
             console.log(results);
             if (err) throw err;
+                 
+               
             res.render('homepage', {results, activeUserFullName, addPermission, imHome, companyName, companyLogo, todayDate});
         });
     };
