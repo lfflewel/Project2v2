@@ -1,4 +1,4 @@
-{{!-- Use this form to create new program --}}
+{{!-- Use this form to create new milestone --}}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -334,6 +334,10 @@ justify-content: space-between;
                 <img src="/img/homeIcon.png">
                 <span>HOME</span>
             </button>
+            <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
+                <img src="/img/addprogram.png">
+                <span>Add Program</span>
+            </button>
             <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
                 <img src="/img/logOutIcon.png">
                 <span>LOG OUT</span>
@@ -343,17 +347,15 @@ justify-content: space-between;
     <main>
 
         <section class="body-container">
-            <h1>Program Creator</h1>
-                <p>To create a Program, type the Program name in the field below and click the create program button</p>
-                <p>Once you create the Program, you will be prompted to add milestones and tasks to this program.</p>
-                    <form action="/newProgram" method="POST">
-                        <h3>Program Name</h3>
-                        <textarea name ="programName" id="programName"></textarea>
-                        <h3>Description</h3>
-                        <textarea name ="programDesc" id="programDesc"></textarea>
+            <h1>Milestone Creator</h1>
+                <p>To create a Milestone, type the Milestone name in the field below and click the create milestone button</p>
+                <p>Once you create the Milestone, you will be prompted to create tasks for each milestone created</p>
+                    <form action="/newMilestone" method="POST">
+                        <h3>Milestone Name</h3>
+                        <textarea name ="milestoneName" id="milestoneName"></textarea>
                         <br>
                         <nav>
-                            <input type="submit" name="createprogram" value="Create New Program">
+                            <input type="submit" name="createmilestones" value="Create New Milestone">
                             
                         </nav>
                     </form>        

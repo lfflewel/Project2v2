@@ -505,7 +505,31 @@ app.post('/newProgram', function(req, res) {
                     else {
                         console.log("Program Inserted");
                         activeProgramId = results.Id;
-                        res.redirect('/newProgram');
+                        res.redirect('/addMilestone');
+                    }
+                })
+    }
+});
+
+/*---- Add Milestone ----*/
+app.get('/addMilestone', function(req, res) {
+    if (req.session.loggedin) {
+        res.render('addMilestone');
+    }
+});
+
+app.post('/newMilestone', function(req, res) {
+    if (req.session.loggedin) {
+        let milestoneName =  req.body.milestoneName;
+
+                pool.query(`INSERT INTO Milestone (mName, mDesc, mOrdinal, pId) VALUES ("${milestoneName}", "${milestoneDesc}", ${activeProgramId})`, function (err, results) {
+                    if (err) {
+                    console.log(err);
+                    }
+                    else {
+                        console.log("Milestone Inserted");
+                        activeProgramId = results.Id;
+                        res.redirect('/addMilestone');
                     }
                 })
     }
