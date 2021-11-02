@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+      #navigation {
+          height: 200px;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          width: 100%;
+      }
+      
+      form {display: inline-flex;}
+
+      </style>
+
+  </head>
+<body>
+    <div class="container">
+        <div class="top">
+           <div id="greetings">
+
+                <h5>{{companyName}}</h5>
+
+                {{#if companyLogo}}
+                <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+                {{else}}
+                <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+                {{/if}}
+
+
+                <p><b>You are log in as {{activeUserFullName}}.</b></p>
+                <h6>Today: {{todayDate}}</h6>
+                {{!-- <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p> --}}
+            </div>
+      </div>
+
+        <div id="navigation">
+            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                <img src="/img/homeIcon.png">
+                <span>HOME</span>
+            </button>
+            
+            
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
+        </div>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">User Id</th>
+          <th scope="col">First Name</th>
+          <th scope="col">Last name</th>
+          <th scope="col">Email</th>
+          <th scope="col" class="text-end">Action</th>
+        </tr>
+      </thead>
+      {{#if addPermission}}
+        {{#each results}}
+          <tr>
+            <td>{{this.uId}}</td>
+            <td>{{this.uFName}}</td>
+            <td>{{this.uLName}}</td>
+            <td>{{this.uEmail}}</td>
+            <td class="text-end"> 
+              <form method="POST" action="/viewSelectedUser"> 
+                  <button class="btn btn-primary" type="submit">View</button>
+                  <input name="userId" type="hidden" value="{{this.uId}}"></input>
+              </form>
+          
+              <form method="POST" action="/editSelectedUser"> 
+                  <button class="btn btn-primary" type="submit">Edit</button>
+                  <input name="userId" type="hidden" value="{{this.uId}}"></input>
+              </form>
+
+              <form method="POST" action="/deleteSelectedUser"> 
+                  <button class="btn btn-primary" type="submit">Delete</button>
+                  <input name="userId" type="hidden" value="{{this.uId}}"></input>
+              </form>
+            </td>
+          </tr>
+        {{/each}}
+      {{else}}
+        {{#each results}}
+          <tr>
+            <td>{{this.uId}}</td>
+            <td>{{this.uFName}}</td>
+            <td>{{this.uLName}}</td>
+            <td>{{this.uEmail}}</td>
+            <td class="text-end"> 
+                  <form method="POST" action="/viewSelectedUser"> 
+                      <button class="btn btn-primary" type="submit">View</button>
+                      <input name="userId" type="hidden" value="{{this.uId}}"></input>
+                  </form>
+                </td>
+            </tr>
+          {{/each}}          
+        {{/if}}
+      </body>
+    </table>
+  </div>
+</body>

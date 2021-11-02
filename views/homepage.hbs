@@ -260,26 +260,27 @@
                 <img src="/img/homeIcon.png">
                 <span>HOME</span>
             </button>
+            {{#if imHome}}
             <button type="button" class="navigation-buttons" onclick="location.href = '/editUser'">
                 <img src="/img/settings.png">
-                <span>Edit Account</span>
+                <span>Edit My Account</span>
+            {{/if}}
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
 
-                <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
-                    <img src="/img/logOutIcon.png">
-                    <span>LOG OUT</span>
-                </button>
+            {{#if addPermission}}
+            <button type="button" class="navigation-buttons" onclick="location.href = '/addUser'">
+                <img src="/img/adduser.png">
+                <span>Add User</span>
+            </button>
 
-                {{#if addPermission}}
-                <button type="button" class="navigation-buttons" onclick="location.href = '/addUser'">
-                    <img src="/img/adduser.png">
-                    <span>Add User</span>
-                </button>
-
-                <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
-                    <img src="/img/addprogram.png">
-                    <span>Add Program</span>
-                </button>
-                {{/if}}
+            <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
+                <img src="/img/addprogram.png">
+                <span>Add Program</span>
+            </button>
+            {{/if}}
 
         </div>
 
@@ -303,16 +304,23 @@
             {{#if isMentee}}
                 {{#if imHome}}
                     <button type="button" class="btn btn-primary" onclick="location.href = '/myMentor'">My Mentor</button>
-                    <button type="button" class="btn btn-primary" onclick="location.href = '/userProgram'">My Program</button>
+                    <button type="button" class="btn btn-primary" onclick="location.href = '/myProgram'">My Program</button>
                 {{/if}}
             {{else if isMentor}}
                 {{#if imHome}}
-                   <button type="button" class="btn btn-primary">My Mentees</button>
-                   <button type="button" class="btn btn-primary" onclick="location.href = '/userProgram'">My Program</button>
+                   <button type="button" class="btn btn-primary" onclick="location.href = '/myMentees'">My Mentees</button>
+                   <button type="button" class="btn btn-primary" onclick="location.href = '/myProgram'">My Program</button>
                 {{/if}}
             {{/if}}
+            {{#if addPermission}}
+                {{#if imHome}}
+                   <button type="button" class="btn btn-primary" onclick="location.href = '/userList'">All Users</button>
+                   <button type="button" class="btn btn-primary" onclick="location.href = '/programList'">All Programs</button>
+                 {{/if}}
+            {{/if}}
+ 
 
-            <div>
+            {{!-- <div>
 
                 <form action="/updateProfilePhoto" method="POST" enctype="multipart/form-data">
                     <div class="input-box">
@@ -328,7 +336,7 @@
                 </form>
 
 
-            </div>
+            </div> --}}
         </div>
         <script src="index.js"></script>
 </body>

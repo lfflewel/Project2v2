@@ -104,7 +104,9 @@ let newUserPW;
 let newUserRole;
 let newUserJob;
 let newUserAbout;
-let activeProgramId
+let activeProgramId;
+let selectedUserId;
+
 
 
 /*---------------------------------------------------------------*/
@@ -231,14 +233,15 @@ app.post('/login', function(req, res) {
                 companyName = results[0].cName;
                 companyLogo = results[0].cLogo;
                 activeUserMentorId = results[0].mentorId;
-                
                 activeUserFullName = activeUserFName + ' ' + activeUserLName;
 
                 console.log(`User ID: ${activeUserId}`);
                 console.log(`User Role: ${activeUserRole}`);
                 
-               
+
                 // Establish permission to add users and programs
+                imHome = true;
+
                 if (activeUserRole == "Admin" || activeUserRole == "Program Manager") {
                     addPermission = true;
                     isMentee = false; 
@@ -292,7 +295,7 @@ app.get('/homepage', function(req, res) {
             if (err) throw err;
 
             imHome = true;
-              
+           
             res.render('homepage', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
         });
     };
@@ -381,7 +384,8 @@ app.post('/createUser', function (req, res) {
     }); 
 }); 
 
-// update user photo
+// update user photo from edituser page
+///****IMPORTANT- NEED TO COME BACK TO THIS NEEDS TO KNOW IDENTIFY IF ACTIVEUSER OR SELECTED USER*/
 app.post('/updateProfilePhoto', function (req, res) {
     let uploadPath;
 
@@ -401,13 +405,8 @@ app.post('/updateProfilePhoto', function (req, res) {
         if (err) return res.status(500).send(err);
 
         pool.query('UPDATE User SET uPhoto = ? WHERE uId = ?', [activeUserPhoto, activeUserId], function (err, results) {
+            console.log
 
-
-            if (!err) {
-
-                res.redirect('/homepage')
-
-            }
         });
     });
 });
@@ -417,33 +416,29 @@ app.post('/updateProfilePhoto', function (req, res) {
 
 
 /*------------------------------EDIT USER-------------------------------*/
+// direct user to edituser page after gathering all user info
 app.get('/editUser', function(req, res) {
     if (req.session.loggedin) {
         pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
             if (!err) {
                 console.log('results', results) 
-                let mentors = {
 
-                };
-
-                    // get list of Mentors for Select
+                    // get list of Mentors for the roles dropdown 
                     pool.query('SELECT * FROM User WHERE uRole = "Mentor"',  function (err, mentors) {
                         if (!err);
                         console.log(mentors);
 
-                        res.render('editUser', {results, mentors, isMentee, isMentor, activeUserFullName, companyName, companyLogo, roles, todayDate});
-                    });
-            }
+                        res.render('editUser', {results, mentors, isMentee, isMentor, addPermission, activeUserFullName, companyName, companyLogo, roles, todayDate});
+                    });            }
             else {
                 console.log(err)
-            }
-            
+            }            
         });
     };
 });
 
   
-
+// Update user based on data sent from edituser.hbs
 app.post('/updateUser', function (req, res) {
     if (req.session.loggedin) {
         let updateUserFName = req.body.updateFN;
@@ -453,34 +448,36 @@ app.post('/updateUser', function (req, res) {
         let updateUserJob = req.body.updateJob;
         let updateUserAbout = req.body.updateAbout;
         let updateUserMentor = req.body.updateMentor;
-     
-        pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?, mentorId=? WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, updateUserMentor, activeUserId], function(err, results) {
-            if(!err) {
-                pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
-                    if(!err) {
+        let updateUserId = req.body.updateId;
 
-                    // get mentorId
-                    pool.query('SELECT * FROM User as mentor WHERE uId = ?', [updateUserMentor], function (err, mentors) {
-                        if (!err);
-                        activeUserMentorId = mentors[0].uId;
-                        console.log(activeUserMentorId)
-                        res.redirect('/homepage')
-                     });
-                    }
+     
+        pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?, mentorId=? WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, updateUserMentor, updateUserId], function(err, results) {
+            if(!err) {
+                pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [updateUserId], function(err, results) {
+                    if(!err) {
+                        
+                        // if the user is a mentee, get their mentor'sId. 
+                        // We only want to make the update the activeUserMentorId if we are editing the active user's file - not if addPermission user is editing.
+                        if (updateUserRole == "Mentee" && activeUserId == updateUserId){
+                                    activeUserMentorId = mentors[0].mentorId;
+                                    console.log(activeUserMentorId)
+                                    res.redirect('/homepage')
+                           }; // end if Mentee
+                    }// end !err
                     else {
                         console.log(err)
-                    }
+                    }// end select
                     console.log('The data from user table : \n', results)
+                    console.log('activeUsersMentorID : \n', activeUserMentorId)
                 })
             }
             else {
                 console.log(err)
-            }
+            };
     
-         })
-    }
-})
-
+         }); res.redirect('/homepage')
+    };
+});
 
 
 /*------------------------------END EDIT USER-------------------------------*/
@@ -524,3 +521,113 @@ app.get('/myMentor', function(req, res) {
         });
     };
 });
+
+// take mentor to their list of mentees
+app.get('/myMentees', function(req, res) {
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM User WHERE mentorId = ?`, [activeUserId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+   
+            imHome = false;
+            res.render('userList', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+        });
+    };
+});
+
+// display list of users to be filtered on userList.hbs by permissions
+app.get('/userList', function(req, res) {
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM User WHERE ucId = ?`, [companyId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+            
+            console.log('addPermission: ', addPermission)
+            res.render('userList', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+        });
+    };
+});
+
+
+// view profile of a selected user on userList page, as a guest. Upon click of Veiw button user is taken to homepage but shown profile of person they are visiting
+app.post('/viewSelectedUser', function(req, res) {
+    if (req.session.loggedin) {
+        selectedUserId = req.body.userId;
+        console.log('selected user: ', selectedUserId);
+        pool.query(`SELECT * FROM User WHERE uId = ?`, [selectedUserId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+            
+            imHome = false;
+            res.render('homepage', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+        });
+    };
+});
+
+// delete a user from the userList.hbs
+app.post('/deleteSelectedUser', function(req, res) {
+    if (req.session.loggedin) {
+        selectedUserId = req.body.userId;
+        console.log('selected user: ', selectedUserId);
+        pool.query(`DELETE FROM User WHERE uId = ?`, [selectedUserId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+            
+            // refresh page after deletion
+            res.redirect('userList');
+        });
+    };
+});
+
+// view profile of a selected user, as a guest. Upon click of Veiw button user is taken to homepage but shown profile of person they are visiting
+app.post('/editSelectedUser', function(req, res) {
+    if (req.session.loggedin) {
+
+        // establish selected user
+        selectedUserId = req.body.userId;
+        let selectedUserIsMentee = false;
+        console.log('Selected User Id: ', selectedUserId);
+
+        // get selected user's current info
+        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [selectedUserId], function(err, results) {
+            if (!err) { 
+                console.log('results', results) 
+
+                imHome = false;
+
+                // need to see if user is a mentee
+                if (results[0].uRole == "Mentee") {
+                    selectedUserIsMentee = true;
+                }else {
+                    console.log("Not a Mentee");
+                }; // end if Mentee
+
+                // get list of Mentors for the roles dropdown - tried to add it to if, but mentors lost scope
+                pool.query('SELECT * FROM User WHERE uRole = "Mentor"',  function (err, mentors) {
+                    if (!err) {
+                        console.log('mentors: ',mentors);
+                        res.render('editUser', {results, mentors, isMentee, selectedUserIsMentee, isMentor, imHome, addPermission, activeUserFullName, companyName, companyLogo, roles, todayDate});
+                    } else 
+                    {
+                        console.log(err);                            }
+                    }); // end mentor query
+            } else {
+                    console.log(err)};// No errors
+        }); // end outer Select query  
+    }; // end if loggin 
+}); // end /editSelectedUser
+
+
+// display list of programs to be filtered on .hbs by permissions -- NOTE programList.hbs is not created yet. Create it once userList is perfected
+app.post('/programsList', function(req, res) {
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+            
+            // programList.hbs is not created yet. Create it once userList is perfected
+            res.render('programList', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+        });
+    };
+});
+
