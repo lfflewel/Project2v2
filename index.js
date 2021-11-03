@@ -104,6 +104,7 @@ let newUserPW;
 let newUserRole;
 let newUserJob;
 let newUserAbout;
+let updatePhoto;
 let activeProgramId;
 let selectedUserId;
 
@@ -450,33 +451,56 @@ app.post('/updateUser', function (req, res) {
         let updateUserMentor = req.body.updateMentor;
         let updateUserId = req.body.updateId;
 
-     
-        pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?, mentorId=? WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, updateUserMentor, updateUserId], function(err, results) {
-            if(!err) {
-                pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [updateUserId], function(err, results) {
-                    if(!err) {
-                        
+     if (req.files) {
+            updatePhoto = req.files.file;
+        }
+
+        let uploadPath;
+
+        // if (!req.files || Object.keys(req.files).length === 0) {
+        //     return res.status(400).send('No files were uploaded.');
+        // };
+       
+        uploadPath = __dirname + '/public/upload/profilePhoto/' + updatePhoto.name;
+
+        updatePhoto.mv(uploadPath, function (err) {
+            if (err) return res.status(500).send(err);
+            pool.query(`UPDATE User SET uPhoto = ? WHERE uId = ? `, [updatePhoto.name, updateUserId], function (err, results) {
+                console.log("Update")
+            });
+        });
+           
+
+
+        pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?, mentorId=? WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, updateUserMentor, updateUserId], function (err, results) {
+            if (!err) {
+                pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [updateUserId], function (err, results) {
+                    if (!err) {
+                        // Use mv() to place file on the server
+
                         // if the user is a mentee, get their mentor'sId. 
                         // We only want to make the update the activeUserMentorId if we are editing the active user's file - not if addPermission user is editing.
-                        if (updateUserRole == "Mentee" && activeUserId == updateUserId){
-                                    activeUserMentorId = mentors[0].mentorId;
-                                    console.log(activeUserMentorId)
-                                    res.redirect('/homepage')
-                           }; // end if Mentee
+                        if (updateUserRole == "Mentee" && activeUserId == updateUserId) {
+                            activeUserMentorId = mentors[0].mentorId;
+                            console.log(activeUserMentorId)
+                            res.redirect('/homepage')
+
+                        }; // end if Mentee
+                        res.render('edituser', { results, activeUserRole, addPermission, isMentee, activeUserFullName, updatePhoto, companyName, companyLogo, roles, todayDate, alert: 'User Updated Successfully' });
                     }// end !err
+
                     else {
                         console.log(err)
                     }// end select
-                    console.log('The data from user table : \n', results)
-                    console.log('activeUsersMentorID : \n', activeUserMentorId)
                 })
             }
             else {
                 console.log(err)
             };
-    
-         }); res.redirect('/homepage')
-    };
+
+        });
+ 
+}
 });
 
 
