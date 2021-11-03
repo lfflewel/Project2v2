@@ -107,19 +107,14 @@
 
     <div class = "user-detail">
         <div class"container-fileUpload">
-       
-                 {{#each results}}
+                {{#each results}}
                 <form action="/updateUser" method="POST" enctype="multipart/form-data">
-                    <div class="input-box">
-                        <p>Upload photo</p>
-                        <div class="fileUpload">
-                            <input type="file" id="file" name="file" class="file" accept="image/*">
-                            <label for="file">Select file</label>
-                        </div>
-                        <div class="button">
-                            <input type="submit" class="btn btn-primary">
-                        </div>
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" name="file" id="inputGroupFile01">
+                        <label class="custom-file-label" for="inputGroupFile01">Upload Photo</label>
                     </div>
+
+        </div>
 
                 <input type="text" value="{{this.uId}}" readonly class="hide" name="updateId">
                 <label> Password </label>
@@ -128,6 +123,7 @@
                 <label> About </label>
                 <input type="text" placeholder="About" id="about" name="updateAbout" value="{{this.uAbout}}" required><br>
         {{/each}}
+        
         {{#if addPermission}}
                 {{#each results}}
                     <label> First Name </label>
