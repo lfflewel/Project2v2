@@ -2,6 +2,7 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,25 +22,29 @@
         margin-right: 0px;
     }
 
-    html, body {
+    html,
+    body {
         height: 100%;
     }
+
     body {
-        background: linear-gradient(149deg, rgba(185,168,255,1) 0%, rgba(214,234,255,1) 48%, rgba(255,225,124,1) 100%);
+        background: linear-gradient(149deg, rgba(185, 168, 255, 1) 0%, rgba(214, 234, 255, 1) 48%, rgba(255, 225, 124, 1) 100%);
         margin: 0;
         display: flex;
     }
+
     p {
         margin-bottom: 0;
         font-family: 'Montserrat-Thin', sans-serif;
     }
+
     ul {
         list-style-type: none;
         margin: 0;
         padding: 0;
     }
 
-    .container{
+    .container {
         width: 80%;
         border-radius: 30px;
         height: 93vh;
@@ -67,17 +72,6 @@
         align-self: center;
     }
 
-    #greetings {
-        padding: 20px 30px;
-        border-radius: 20px;
-        color: rgb(22, 22, 22);
-        width: 100%;
-        height: 200px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        text-align: center;
-    }
 
     #navigation {
         height: 200px;
@@ -98,210 +92,81 @@
         font-size: 20px;
     }
 
-    #welcomeText{
-        position: absolute;
-        left: 50%;
-        top: 10%;
-        transform: translate(-50%, -50%);
-        font-size: 25px;
-    }
 
-    #createNewCourse {
-        width: 100%;
-        height: 300px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
 
-    #createNewCourse #newCourseBtn {
-        width: 300px;
-        height: 200px;
-        background-color: #ffda62;
-        border: 0;
-        box-shadow: 0;
-        padding: 20px;
-        font-weight: bold;
-        border-radius: 20px;
-        font-size: 20px;
-        box-shadow: 5px 5px 20px #797979;
-    }
 
-    #existingCourses {
-        margin-top: 20px;
-        padding: 20px 30px;
+    #navigation button {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: 200px;
-        text-align: center;
-    }
-
-    #existingCourses h5 {
-        color: #1b1b1b;
-        letter-spacing: 10px;
-        font-size: 35px;
-        margin: 0px 0px 30px 0px;
-    }
-
-    #dropdownList {
-        width: 90%;
-    }
-
-    select{
-        display: block;
-        margin-right: 20vw;
-        font-size: 20px;
-        text-align: center;
-        border: 0;
-        padding: 15px;
-        width: 100%;
-        appearance: none;
-        outline: none;
-        box-shadow: 0;
-        background-color: #a298db;
-        color: #FFFFFF;
-    }
-
-    select::-ms-expand {
-        display: none;
-    }
-
-
-        #navigation button {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            width: 130px;
-            height: 130px;
-            border-radius: 15px;
-            background-color: transparent;
-            border: 0;
-            outline: 0;
-            cursor: pointer;
-        }
-
-        #navigation button img {
-            width: 60px;
-            margin-bottom: 10px;
-        }
-
-        #navigation button span {
-            font-size: 15px;
-            font-weight: bold;
-        }
-
-        .courseContainer button {
-            height: 60px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border: 0;
-        }
-
-        .courseContainer #selectCourseBtn {
-            width: 85%;
-            background-color: #FFFFFF;
-            border-top-right-radius: 10px;
-            border-bottom-right-radius: 10px;
-        }
-
-        .courseContainer #deleteCourseBtn {
-            width: 8%;
-            background-color: #71b9ff;
-            border-top-left-radius: 10px;
-            border-bottom-left-radius: 10px;
-        }
-
-        .courseContainer #deleteCourseBtn:hover {
-            background-color: #161616;
-            color: #FFFFFF;
-        }
-
-        .courseContainer #selectCourseBtn:hover {
-            background-color: #fbd453;
-        }
-
-    /* Courses */
-    .courseList {
-        width: 100%;
-        height: 100%;
-        overflow-y: scroll;
-    }
-
-    .courseList .courseContainer {
-        display: flex;
-        flex-direction: row;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .bottom #createNewCourseBtn {
+        padding: 10px;
+        width: 130px;
+        height: 130px;
+        border-radius: 15px;
         background-color: transparent;
         border: 0;
-        padding: 15px;
-        font-weight: bold;
-        font-size: 1.6em;
+        outline: 0;
         cursor: pointer;
     }
 
-    .bottom #createNewCourseBtn:hover {
-        color: #a298db;
+    #navigation button img {
+        width: 60px;
+        margin-bottom: 10px;
     }
 
-    ::-webkit-scrollbar {
-        background: #FFFFFF;
-        border-radius: 20px;
+    #navigation button span {
+        font-size: 15px;
+        font-weight: bold;
     }
 
-    ::-webkit-scrollbar-thumb {
-        background: #a298db;
-        border-radius: 20px;
-    }
-        
+
+
+
+
     /* Start Main */
     h1 {
         margin: auto;
     }
 
-            /*Profile Card  */
-   img {width:100%;} 
+    /*Profile Card  */
+    img {
+        width: 100%;
+    }
 
-.wrapper {
-display: grid;
-place-items: center;
-height: 100vh;
-}
+    .wrapper {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+    }
 
-.btn {
-border: none;
-color:#fff;
-padding: 15px 32px;
-text-align: center;
-text-decoration: none;
-display: inline-block;
-font-style: 16px;
-margin: 4px 2px;
-cursor: pointer;
-width: 100%;
-border-radius: 3px;
-}
+    .btn {
+        border: none;
+        color: #fff;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-style: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        width: 100%;
+        border-radius: 3px;
+    }
 
-.btn-primary {background-color: #008CBA;}
+    .btn-primary {
+        background-color: #008CBA;
+    }
 
-/* fileUpload */
-.file {
-opacity: 0;
-width: 0.1px;
-height: 0.1px;
-position: absolute;
-}
+    /* fileUpload */
+    .file {
+        opacity: 0;
+        width: 0.1px;
+        height: 0.1px;
+        position: absolute;
+    }
 
-.fileUpload  {
+    .fileUpload {
         display: block;
         position: relative;
         width: 200px;
@@ -316,13 +181,25 @@ position: absolute;
         font-weight: bold;
         cursor: pointer;
         transition: transform .2s ease-out;
-        
-}
 
-.container-fileUpload{
-justify-content: space-between;
-}
+    }
 
+    .container-fileUpload {
+        justify-content: space-between;
+    }
+    input.form-control {
+        width:100%;
+        margin-top: 20px;
+        height: 50px;
+       
+    }
+    .button {
+        width: 20%;
+        height: 40px;
+        margin-top: 5px;
+       
+        transform: translate(220%, 10%);
+    }
 </style>
 
 
@@ -330,39 +207,47 @@ justify-content: space-between;
 <body>
 
     <div id="navigation">
-            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
-                <img src="/img/homeIcon.png">
-                <span>HOME</span>
-            </button>
-            <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
-                <img src="/img/addprogram.png">
-                <span>Add Program</span>
-            </button>
-            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
-                <img src="/img/logOutIcon.png">
-                <span>LOG OUT</span>
-            </button>
-        </div>
+        <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+            <img src="/img/homeIcon.png">
+            <span>HOME</span>
+        </button>
+        <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
+            <img src="/img/addprogram.png">
+            <span>Add Program</span>
+        </button>
+        <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+            <img src="/img/logOutIcon.png">
+            <span>LOG OUT</span>
+        </button>
+    </div>
 
     <main>
 
         <section class="body-container">
             <h1>Milestone Creator</h1>
-                <p>To create a Milestone, type the Milestone name in the field below and click the create milestone button</p>
-                <p>Once you create the Milestone, you will be prompted to create tasks for each milestone created</p>
-                    <form action="/newMilestone" method="POST">
-                        <h3>Milestone Name</h3>
-                        <textarea name ="milestoneName" id="milestoneName"></textarea>
-                        <br>
-                        <nav>
-                            <input type="submit" name="createmilestones" value="Create New Milestone">
-                            
-                        </nav>
-                    </form>        
+            <p>To create a Milestone, type the Milestone name in the field below and click the create milestone button
+            </p>
+            <p>Once you create the Milestone, you will be prompted to create tasks for each milestone created</p>
+            <form action="/newMilestone" method="POST">
+                <div class="form-row">
+                    <div class="col">
+                        <input type="text" class="form-control" name="milestoneName" placeholder="Milestone Name" required>
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="milestoneDesc" placeholder="Milestone Description" required>
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="milestoneOrd" placeholder="Milestone Ordinal" required>
+                    </div>
+
+                    <div class="button">
+                        <button type="submit" name="createprogram">Create Milestone</button>
+            </form>
         </section>
-        
+
 
     </main>
-    <script src="index.js"></script> 
+    <script src="index.js"></script>
 </body>
+
 </html>
