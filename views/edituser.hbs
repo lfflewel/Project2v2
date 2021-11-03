@@ -108,7 +108,8 @@
     <div class = "user-detail">
         <div class"container-fileUpload">
        
-                <form action="/updateProfilePhoto" method="POST" enctype="multipart/form-data">
+                 {{#each results}}
+                <form action="/updateUser" method="POST" enctype="multipart/form-data">
                     <div class="input-box">
                         <p>Upload photo</p>
                         <div class="fileUpload">
@@ -119,11 +120,7 @@
                             <input type="submit" class="btn btn-primary">
                         </div>
                     </div>
-                </form>
-        </div>
 
-        <form action="/updateUser" method="POST">
-        {{#each results}}
                 <input type="text" value="{{this.uId}}" readonly class="hide" name="updateId">
                 <label> Password </label>
                 <input type="text" placeholder="Enter Password" name="updatePassword" value="{{this.uPass}}" required><br>
