@@ -108,6 +108,12 @@ let updatePhoto;
 let activeProgramId;
 let selectedUserId;
 
+// program variable
+let programName;
+let programDesc;
+let milestoneName;
+let milestoneDesc;
+let milestoneOrd;
 
 
 /*---------------------------------------------------------------*/
@@ -506,55 +512,7 @@ app.post('/updateUser', function (req, res) {
 
 /*------------------------------END EDIT USER-------------------------------*/
 
-/* -- Programs PAGE ------------------------------------------- */
-app.get('/newProgram', function(req, res) {
-    if (req.session.loggedin) {
-        res.render('newProgram');
-    }
-});
 
-// CREATE A NEW Program
-app.post('/newProgram', function(req, res) {
-    if (req.session.loggedin) {
-        let programName =  req.body.programName;
-        let programDesc = req.body.programDesc;
-
-                pool.query(`INSERT INTO Program (pName, pDesc, cId) VALUES ("${programName}", "${programDesc}", ${companyId})`, function (err, results) {
-                    if (err) {
-                    console.log(err);
-                    }
-                    else {
-                        console.log("Program Inserted");
-                        activeProgramId = results.Id;
-                        res.redirect('/addMilestone');
-                    }
-                })
-    }
-});
-
-/*---- Add Milestone ----*/
-app.get('/addMilestone', function(req, res) {
-    if (req.session.loggedin) {
-        res.render('addMilestone');
-    }
-});
-
-app.post('/newMilestone', function(req, res) {
-    if (req.session.loggedin) {
-        let milestoneName =  req.body.milestoneName;
-
-                pool.query(`INSERT INTO Milestone (mName, mDesc, mOrdinal, pId) VALUES ("${milestoneName}", "${milestoneDesc}", ${activeProgramId})`, function (err, results) {
-                    if (err) {
-                    console.log(err);
-                    }
-                    else {
-                        console.log("Milestone Inserted");
-                        activeProgramId = results.Id;
-                        res.redirect('/addMilestone');
-                    }
-                })
-    }
-});
 
 /*----------------My Mentee Button------------*/
 
@@ -666,16 +624,114 @@ app.post('/editSelectedUser', function(req, res) {
 }); // end /editSelectedUser
 
 
+/*--------------------------------END USER LIST PAGE---------------------------------------*/
+
+
+/*--------------------------------PROGRAM LIST PAGE---------------------------------------*/
+
 // display list of programs to be filtered on .hbs by permissions -- NOTE programList.hbs is not created yet. Create it once userList is perfected
-app.post('/programsList', function(req, res) {
+app.get('/programList', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function(err, results) {
+        pool.query(`SELECT * FROM Program WHERE cId = ?`, [companyId], function (err, results) {
             console.log(results);
             if (err) throw err;
-            
-            // programList.hbs is not created yet. Create it once userList is perfected
-            res.render('programList', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+
+            res.render('programList', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
+
+
+// TODO: STILL NEED TO DO THIS PART. NOT SURE WHAT FUNCTION WE NEED FOR THIS
+app.post('/programsList', function (req, res) {
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function (err, results) {
+            console.log(results);
+            if (err) throw err;
+
+            // programList.hbs is not created yet. Create it once userList is perfected
+            res.render('programList', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+        });
+    };
+});
+
+
+
+/*--------------------------------END PROGRAM LIST PAGE---------------------------------------*/
+
+
+
+
+
+/* -- ----------------------CREATE A PROGRAM------------------------------------------- */
+
+// display program page
+app.get('/newProgram', function (req, res) {
+    if (req.session.loggedin) {
+        pool.query('SELECT * FROM Program where cId=?', [companyId], function (err, results) {
+            console.log(results);
+            if (err) throw err;
+            res.render('newProgram', { results, activeUserFullName, companyName, companyLogo, todayDate });
+        })
+    };
+});
+
+// create a new program
+app.post('/newProgram', function (req, res) {
+    if (req.session.loggedin) {
+        programName = req.body.programName;
+        programDesc = req.body.programDesc;
+
+        pool.query(`INSERT INTO Program (pName, pDesc, cId) VALUES ("${programName}", "${programDesc}", ${companyId})`, function (err, results) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                console.log("Program Inserted");
+                
+                res.redirect('/addMilestone');
+            }
+        })
+    }
+});
+/*----------------------------END CREATE PROGRAM ------------------------------------------*/
+
+
+/*----------------------------ADD MILESTONE FOR PROGRAM ------------------------------------------*/
+
+// dispplay milestone page
+app.get('/addMilestone', function (req, res) {
+    if (req.session.loggedin) {
+        pool.query('SELECT * FROM Program WHERE cId=?', [companyId], function (err, results) {
+            console.log(results);
+            activeProgramId = results[0].pId;
+            if (err) throw err;
+            res.render('addMilestone', { results, activeUserFullName, companyName, companyLogo, todayDate });
+        })
+    };
+});
+
+
+// create new milestone
+app.post('/newMilestone', function (req, res) {
+    if (req.session.loggedin) {
+        milestoneName = req.body.milestoneName;
+        milestoneDesc = req.body.milestoneDesc;
+        milestoneOrd  = req.body.milestoneOrd;  
+
+        pool.query(`INSERT INTO Milestone (mName, mDesc, mOrdinal, mpId) VALUES ("${milestoneName}", "${milestoneDesc}", "${milestoneOrd}", "${activeProgramId}")`, function (err, results) {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                console.log("Milestone Inserted");
+                activeProgramId = results.Id;
+                res.redirect('/addMilestone');
+            }
+        })
+    }
+});
+
+/*----------------------------END MILESTONE FOR PROGRAM ------------------------------------------*/
+
 
