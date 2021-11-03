@@ -159,6 +159,18 @@
                 font-size: 15px;
             }
         }
+        span {
+            position: absolute;
+            margin-left: 300px;
+
+            top: 63%;
+            cursor: pointer;
+        }
+
+        .fa {
+            font-size: 20px;
+            color: #7a797e;
+        }
     </style>
     {{!--
     <link rel="stylesheet" href="style.css"> --}}
@@ -184,6 +196,7 @@
                 <form action="/login" method="POST">
                     <input type="text" name="useremail" class="input-box" placeholder="User Email" focus>
                     <input type="password" name="password" class="input-box" placeholder="Password">
+                    <span><i class="fa fa-eye" aria-hidden="true" id="eye" onclick="toggle()"></i></span>
                     <input type="submit" name="login-btn" class="btn" value="Login">
                 </form>
             </div>
@@ -206,9 +219,24 @@
 
     <section class="mobile">
     </section>
-    {{!--
-    <script src="clientSide.js"></script> --}}
+   
     <script src="index.js"></script>
+    <script>
+        // show/ hide password
+        var state = false;
+        function toggle() {
+            if (state) {
+                document.getElementById("password").setAttribute("type", "password");
+                document.getElementById("eye").style.color = "#7a797e";
+                state = false;
+            }
+            else {
+                document.getElementById("password").setAttribute("type", "text");
+                document.getElementById("eye").style.color = "#5887ef";
+                state = true;
+            }
+        }
+    </script>
 </body>
 
 </html>
