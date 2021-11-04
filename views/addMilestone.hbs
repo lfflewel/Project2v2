@@ -187,24 +187,44 @@
     .container-fileUpload {
         justify-content: space-between;
     }
+
     input.form-control {
-        width:100%;
+        width: 100%;
         margin-top: 20px;
         height: 50px;
-       
+
     }
+
     .button {
         width: 20%;
         height: 40px;
         margin-top: 5px;
-       
+
         transform: translate(220%, 10%);
+    }
+
+    .milestoneListContainer {
+        margin-top: 20px;
+        
     }
 </style>
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
 
 <body>
+    <h5>{{companyName}}</h5>
+
+    {{#if companyLogo}}
+    <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+    {{else}}
+    <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+    {{/if}}
+
+
+    <p><b>You are log in as {{activeUserFullName}}.</b></p>
 
     <div id="navigation">
         <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
@@ -223,7 +243,7 @@
 
     <main>
 
-        <section class="body-container">
+        <div class="body-container">
             <h1>Milestone Creator</h1>
             <p>To create a Milestone, type the Milestone name in the field below and click the create milestone button
             </p>
@@ -231,19 +251,42 @@
             <form action="/newMilestone" method="POST">
                 <div class="form-row">
                     <div class="col">
-                        <input type="text" class="form-control" name="milestoneName" placeholder="Milestone Name" required>
+                        <input type="text" class="form-control" name="milestoneName" placeholder="Milestone Name"
+                            required>
                     </div>
                     <div class="col">
-                        <input type="text" class="form-control" name="milestoneDesc" placeholder="Milestone Description" required>
+                        <input type="text" class="form-control" name="milestoneDesc" placeholder="Milestone Description"
+                            required>
                     </div>
                     <div class="col">
-                        <input type="text" class="form-control" name="milestoneOrd" placeholder="Milestone Ordinal" required>
+                        <input type="text" class="form-control" name="milestoneOrd" placeholder="Milestone Ordinal"
+                            required>
                     </div>
 
                     <div class="button">
                         <button type="submit" name="createprogram">Create Milestone</button>
+                    </div>
             </form>
-        </section>
+        </div>
+
+        <div class="milestoneListContainer">
+            {{#each results}}
+
+            <form action="/a" method="POST">
+                <input type="hidden" name="selectedMilestone" value="{{this.mName}}">
+                <button class="btn btn-primary" id="selectedMilestone" type="submit" formaction="/getMilestone">
+
+                    <i class="bi bi-folder2-open " style="font-size:70px;"></i>
+
+                    <h3>{{this.mName}}</h3>
+
+                </button>
+            </form>
+
+            {{/each}}
+
+        </div>
+
 
 
     </main>
