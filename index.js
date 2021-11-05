@@ -785,3 +785,55 @@ app.post('/getMilestone', function(req,res) {
 })
 
 
+/* -- ----------------------CREATE A TASK------------------------------------------- */
+
+
+// display program page
+app.get('/addTask', function (req, res) {
+    if (req.session.loggedin) {
+        pool.query('SELECT * FROM Tasks WHERE tmId=?', [selectedMId], function (err, results) {
+            if (err) throw err;
+            res.render('addTask', { results, activeUserFullName, companyName, companyLogo, todayDate });
+        })
+    };
+});
+
+// create a new program
+
+app.post('/newTask', function (req, res) {
+    if (req.session.loggedin) {
+        let taskName = req.body.taskName;
+        let taskDesc = req.body.taskDesc;
+        let taskText = req.body.taskText;
+        textFile = req.files.file;  
+
+        let uploadPath;
+
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).send('No files were uploaded.')
+        }
+
+        uploadPath = __dirname + '/public/upload/companyFile/' + textFile.name;
+        console.log(companyLogo);
+
+        // user mv(to place file on the server)
+        textFile.mv(uploadPath, function (err) {
+            if (err) return res.status(500).send(err);
+
+            pool.query(`INSERT INTO Tasks (tName, tDesc, tText, tFile, tmId) VALUES ("${taskName}", "${taskDesc}", "${taskText}", "${textFile.name}", ${selectedMId})`, function (err, results) {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    console.log("Program Inserted");
+                   res.redirect('/addTask');
+                }
+            })
+        })
+};
+});
+
+
+// /*----------------------------END CREATE TASK ------------------------------------------*/
+
+
