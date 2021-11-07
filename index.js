@@ -12,6 +12,7 @@ const exp = require('constants');
 const { Console } = require('console');
 const fileUpload = require('express-fileUpload');
 const exphbs = require('express-handlebars');
+const nodemailer = require("nodemailer");
 
 
 // this to parse JSON data that gets retrieve from the data base
@@ -114,11 +115,14 @@ let programDesc;
 let selectedPId;
 let selectedMId;
 
-
+// notification emails
+let notifyTo;
+let notifySubject;
+let notifyText;
 
 /*---------------------------------------------------------------*/
 
-/* -- INVALID LOG IN SCREEN ---------------------------------- */
+/* --------------------------------- INVALID LOG IN SCREEN ---------------------------------- */
 app.get('/invalidLoginScreen', function (req, res) {
     res.render('invalidLoginScreen.hbs');
 })
@@ -135,12 +139,10 @@ app.get('/', function (req, res) {
     res.render('login');
 });
 
+/*-----------------------------------END INVALID LOGIN-------------------------------------*/
 
 
-
-/*---------------------------------------------------------------*/
-
-/* ------------------------------- SETUP COMPANY INFO------------------------------------ */
+/* --------------------------------- SETUP COMPANY INFO------------------------------------ */
 
 // display register
 app.post('/getStarted', function (req, res) {
@@ -151,17 +153,17 @@ app.post('/getStarted', function (req, res) {
 app.post('/initCompany', function (req, res) {
 	companyName = req.body.companyName;
 	companyLogo = req.files.file;
+    let adminUserName = req.body.adminUserName;
 	adminFName = req.body.adminFName;
 	adminLName = req.body.adminLName;
 	adminJob = req.body.adminJob;
 	adminEmail = req.body.adminEmail;
 	adminPW = req.body.adminPW;
 
-
-	pool.query(`SELECT * FROM User WHERE uEmail = ?`, [adminEmail], function (err, results, fields) {
+	pool.query(`SELECT * FROM User WHERE username = ?`, [adminUserName], function (err, results, fields) {
 		if (err) throw err;
         	if (results.length > 0) {
-		   console.log('Email already exists');
+		   console.log('UserName already exists');
 		    }
 		else {
 		    let uploadPath;
@@ -185,10 +187,20 @@ app.post('/initCompany', function (req, res) {
 				
 		
                             // INSERT ADMIN INFO
-                            pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, ucId) VALUES ("${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${adminJob}", "${companyId}")`, function(err, results) {
+                            pool.query(`INSERT INTO User (userName, uFName, uLName, uEmail, uPass, uRole, uJob, ucId) VALUES ("${adminUserName}","${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${adminJob}", "${companyId}")`, function(err, results) {
                                 if (err) throw (err);
+
+                                // notficaton email
+                                notifyTo = adminEmail;
+                                notifySubject = 'New User Activation';
+                                notifyText = `Your account had been activated. You may now login with username ${adminUserName} and your temporary password ${adminPW}`;
+
+                                console.log(notifyTo);
+                                console.log(notifySubject);
+                                console.log(notifyText);
+                                notify();
+                                
                                 console.log("Added ADMIN INFO")
-					
 				            });
 			            });
                     });
@@ -197,24 +209,24 @@ app.post('/initCompany', function (req, res) {
 	});
 });
 
-/*-------------------------------END COMPANY SETUP-----------------------------------------*/
+/*-------------------------------------END COMPANY SETUP-----------------------------------------*/
 
 
-/*----------------------------------------LOGIN ACCOUNT----------------------------------*/
+/*----------------------------------------LOGIN ACCOUNT------------------------------------------*/
 app.post('/login', function(req, res) {
-    var useremail = req.body.useremail;
+    var username = req.body.username;
     var password = req.body.password;
 
     console.log('Begin validating user...');
-    console.log(`Useremail: ${useremail}`);
+    console.log(`Username: ${username}`);
     console.log(`Password: ${password}`);
 
      // if (useremail == valid && password == valid)
-    if (useremail && password) {
+    if (username && password) {
 
         // call to db --> pass in the useremail && passwod as the parameters [] for the QUERY string below
         // inside the query statement, we also define a function that will handle the error, results from the SQL query
-        pool.query('SELECT * FROM User JOIN Company On cId=ucId WHERE uEmail = ? AND uPass = ?', [useremail, password], function (err, results) {
+        pool.query('SELECT * FROM User JOIN Company On cId=ucId WHERE username= ? AND uPass = ?', [username, password], function (err, results) {
             if (!err);
 
             if (results.length > 0) {
@@ -225,7 +237,7 @@ app.post('/login', function(req, res) {
                 // now we set our session.loggedin to be true
                 // set the session username to the signed in username --> in case of needing to reference it in other methods below
                 req.session.loggedin = true;
-                req.session.useremail = useremail;
+                req.session.username = username;
 
                 // we will also assign that to a global variable above ---> in also case of needing to reference it in other methods below
                 activeUserId = results[0].uId;
@@ -277,11 +289,10 @@ app.post('/login', function(req, res) {
         res.redirect('/invalidLoginScreen');
     }
 });
+/*-------------------------------------END LOGIN--------------------------------------------*/
 
-/*------------------------------END LOGIN--------------------------------------------*/
 
-
-/*--------------------------------LOGOUT ACCOUNT----------------------------------*/
+/*-------------------------------------------LOGOUT ACCOUNT----------------------------------*/
 
 // LOG USER OUT REDIRECT TO LOGIN PAGE
 app.get('/logout', function (req, res) {
@@ -291,10 +302,10 @@ app.get('/logout', function (req, res) {
     isMentee = false;
     res.redirect('/');
 });
+/*--------------------------------------------END LOGOUT--------------------------------------------*/
 
-/*------------------------------END LOGOUT--------------------------------------------*/
 
-/*------------------------------HOMEPAGE(USER'S PROFILE)--------------------------------------------*/
+/*----------------------------------------HOMEPAGE(USER'S PROFILE)----------------------------------*/
 app.get('/homepage', function(req, res) {
     if (req.session.loggedin) {
         pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
@@ -302,17 +313,14 @@ app.get('/homepage', function(req, res) {
             if (err) throw err;
 
             imHome = true;
-           
             res.render('homepage', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
         });
     };
 });
-
-        
-/*------------------------------END HOMEPAGE(USER'S PROFILE)-------------------------------*/
+/*---------------------------------------END HOMEPAGE(USER'S PROFILE)-------------------------------*/
 
 
-/*------------------------------SET NEW USER--------------------------------------------*/
+/*------------------------------------------ADD NEW USER--------------------------------------------*/
 // Render adduser.hbs
 app.get('/addUser', function (req, res) {
     // newUserMessage = 'Please enter user information.';
@@ -320,7 +328,6 @@ app.get('/addUser', function (req, res) {
         pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
             console.log(results);
             if (err) throw err;
-
 
             res.render('addUser', {results, activeUserFullName, addPermission, roles, imHome, companyName, companyLogo, todayDate});
         });
@@ -330,6 +337,7 @@ app.get('/addUser', function (req, res) {
 // Create New User
 app.post('/createUser', function (req, res) {
 
+    newUserUserName = req.body.username;
     newUserFName = req.body.userFName;
     newUserLName = req.body.userLName;
     newUserEmail = req.body.userEmail;
@@ -355,8 +363,7 @@ app.post('/createUser', function (req, res) {
     });
     // End File Section
 
-
-
+    console.log(newUserUserName);
     console.log(newUserFName);
     console.log(newUserLName);
     console.log(newUserEmail);
@@ -365,19 +372,19 @@ app.post('/createUser', function (req, res) {
     console.log(newUserJob);
     console.log(newUserPhoto);
 
-    pool.query('SELECT * FROM User WHERE uEmail = ?', [newUserEmail], function (err, results, fields) {
+    pool.query('SELECT * FROM User WHERE username = ?', [newUserUserName], function (err, results, fields) {
         if (err) throw err;
 
         if (results.length > 0) {
             canAddNewMessage = false;
-            newUserMessage = 'Email already exists, enter a different email.';
+            newUserMessage = 'UserName already exists, enter a different UserName.';
             res.redirect('/addUser');
-            console.log('Email already exists');
+            console.log('UserName already exists');
         }
         else {
             //save dato into the database
-            pool.query(`INSERT INTO User (uFName, uLName, uEmail, uPass, uRole, uJob, uAbout, uPhoto, ucId) VALUES 
-                ("${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserAbout}","${newUserPhoto.name}", "${companyId}")`, function (err, results) {
+            pool.query(`INSERT INTO User (userName, uFName, uLName, uEmail, uPass, uRole, uJob, uAbout, uPhoto, ucId) VALUES 
+                ("${newUserUserName}","${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserAbout}","${newUserPhoto.name}", "${companyId}")`, function (err, results) {
                 if (err) {
                     console.log(err);
                 }
@@ -385,6 +392,17 @@ app.post('/createUser', function (req, res) {
                     var newUserId = results.insertId
                     console.log(`New User Id: ${newUserId}`);
                 }
+                
+                // notficaton email
+                notifyTo = newUserEmail;
+                notifySubject = 'New User Activation';
+                notifyText = `Your account had been activated. You may now login with username ${newUserUserName} and your temporary password ${newUserPW}`;
+
+                console.log(notifyTo);
+                console.log(notifySubject);
+                console.log(notifyText);
+                notify();
+
                 res.render('addUser', {results, activeUserFullName, companyName, companyLogo, roles, alert:'User added successfully.' });
             }); 
         }; 
@@ -417,12 +435,10 @@ app.post('/updateProfilePhoto', function (req, res) {
         });
     });
 });
+/*------------------------------------------ADD NEW USER--------------------------------------------*/
 
 
-/*------------------------------END SET NEW USER-------------------------------*/
-
-
-/*------------------------------EDIT USER-------------------------------*/
+/*------------------------------------------EDIT USER----------------------------------------------*/
 // direct user to edituser page after gathering all user info
 app.get('/editUser', function(req, res) {
     if (req.session.loggedin) {
@@ -443,7 +459,6 @@ app.get('/editUser', function(req, res) {
         });
     };
 });
-
   
 // Update user based on data sent from edituser.hbs
 app.post('/updateUser', function (req, res) {
@@ -508,14 +523,9 @@ app.post('/updateUser', function (req, res) {
  
 }
 });
+/*-------------------------------------------END EDIT USER---------------------------------------------*/
 
-
-/*------------------------------END EDIT USER-------------------------------*/
-
-
-
-/*----------------My Mentee Button------------*/
-
+/*----------------------------------------MY MENTOR / MY MENTEES / ALL USERS BUTTONS--------------------*/
 app.get('/myMentor', function(req, res) {
     if (req.session.loggedin) {
         pool.query(`SELECT * FROM User WHERE uId = ?`, [activeUserMentorId], function(err, results) {
@@ -553,7 +563,6 @@ app.get('/userList', function(req, res) {
         });
     };
 });
-
 
 // view profile of a selected user on userList page, as a guest. Upon click of Veiw button user is taken to homepage but shown profile of person they are visiting
 app.post('/viewSelectedUser', function(req, res) {
@@ -622,17 +631,15 @@ app.post('/editSelectedUser', function(req, res) {
         }); // end outer Select query  
     }; // end if loggin 
 }); // end /editSelectedUser
+/*---------------------------------------END MY MENTOR / MY MENTEES / ALL USERS BUTTONS--------------------*/
 
 
-/*--------------------------------END USER LIST PAGE---------------------------------------*/
-
-
-/*--------------------------------PROGRAM LIST PAGE---------------------------------------*/
+/*-------------------------------------------------PROGRAM LIST PAGE---------------------------------------*/
 
 // display list of programs to be filtered on .hbs by permissions -- NOTE programList.hbs is not created yet. Create it once userList is perfected
 app.get('/programList', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM Program WHERE cId = ?`, [companyId], function (err, results) {
+        pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function (err, results) {
             console.log(results);
             if (err) throw err;
 
@@ -657,13 +664,13 @@ app.post('/programsList', function (req, res) {
 
 
 
-/*--------------------------------END PROGRAM LIST PAGE---------------------------------------*/
+/*--------------------------------------------------END PROGRAM LIST PAGE---------------------------------------*/
 
 
 
 
 
-/* -- ----------------------CREATE A PROGRAM------------------------------------------- */
+/* -- -----------------------------------------------CREATE A PROGRAM------------------------------------------- */
 
 // display program page
 app.get('/newProgram', function (req, res) {
@@ -799,7 +806,6 @@ app.get('/addTask', function (req, res) {
 });
 
 // create a new program
-
 app.post('/newTask', function (req, res) {
     if (req.session.loggedin) {
         let taskName = req.body.taskName;
@@ -809,6 +815,7 @@ app.post('/newTask', function (req, res) {
 
         let uploadPath;
 
+        // Dylan, I think we want to avoid res.status as it essentially requires upload i think we want maybe declare put all upload items inside the if false, if true, do nothing
         if (!req.files || Object.keys(req.files).length === 0) {
             return res.status(400).send('No files were uploaded.')
         }
@@ -837,3 +844,136 @@ app.post('/newTask', function (req, res) {
 // /*----------------------------END CREATE TASK ------------------------------------------*/
 
 
+/* -------------------------------EMAILING----------------------------------------------- */
+
+app.get('/emailMyMentees', function(req, res) {
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM User WHERE mentorId = ?`, [activeUserId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+
+            res.render('emailForm', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+        });
+    };
+});
+
+app.get('/emailMyMentor', function(req, res) {
+    if (req.session.loggedin) {
+        pool.query(`SELECT * FROM User WHERE uId = ?`, [activeUserMentorId], function(err, results) {
+            console.log(results);
+            if (err) throw err;
+
+            res.render('emailForm', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+        });
+    };
+});
+
+// onclick of email button, render contact page (only shown for addPermission)
+app.get('/emailAll', function (req, res) {
+    if (req.session.loggedin) {
+        pool.query('SELECT * FROM User Join Company on ucId = cId WHERE cId=?', [companyId], function (err, results) {
+            if (err) throw err;
+
+            res.render('emailForm', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+        })
+    };
+});
+
+// this send the email entered into the contact form
+app.post('/send', (req, res) => {
+    let to = req.body.to;
+    let from = activeUserEmail;
+    let subject = req.body.subject;
+    let text = req.body.message;
+
+    const output = `
+        <p>${subject}</p>
+        <p>From: ${from}</P
+        <h3>Message: </h3>
+        <p>${text}</p>
+        <p>Kind Regards,</p>
+        <p>${activeUserFullName}</p>
+        <p>${activeUserRole}</p>
+    `;
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: from,
+            pass: 'M1 password!'
+        },
+        tls:{
+            rejectUnauthorized:false
+        }
+    });
+
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: from, // sender address
+        to: to, // list of receivers
+        subject: subject, // Subject line
+        text: text, // plain text body
+        html: output // html body
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            console.log('Message sent: %s', info.messageId);   
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+
+            res.render('contact', {activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, msg:('Email has been sent')});
+        });
+});
+
+// This function is call throughout to send notification emails from the system email
+function notify() {
+    // system email  
+    let from = "Email.GroupSix@gmail.com"; 
+
+    const output = `
+    <p>${notifySubject}</p>
+    <p>From: ${from}</P
+    <h3>Message: </h3>
+    <p>${notifyText}</p>
+    `;
+
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: {
+            user: from,
+            pass: 'M1 password!'
+        },
+        tls:{
+            rejectUnauthorized:false
+        }
+    });
+
+    // setup email data with unicode symbols
+    let mailOptions = {
+        from: '"No Reply - System Email", <Email.GroupSix@gmail.com>', // sender address
+        to: notifyTo, // list of receivers
+        subject: notifySubject, // Subject line
+        text: notifyText, // plain text body
+        html: output // html body
+    };
+
+    // send mail with defined transport object
+    transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            console.log('Message sent: %s', info.messageId);   
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+            console.log(mailOptions);
+
+            return({msg:('Email has been sent')});
+            // res.render('contact', {activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, msg:('Email has been sent')});
+    });
+};

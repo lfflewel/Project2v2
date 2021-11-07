@@ -260,6 +260,7 @@
                 <img src="/img/homeIcon.png">
                 <span>HOME</span>
             </button>
+         
             {{#if imHome}}
             <button type="button" class="navigation-buttons" onclick="location.href = '/editUser'">
                 <img src="/img/settings.png">
@@ -280,6 +281,11 @@
                 <img src="/img/addprogram.png">
                 <span>Add Program</span>
             </button>
+            
+            <button type="button" class="navigation-buttons" onclick="location.href = '/emailAll'">
+                <img src="/img/emailicon.png">
+                <span>Email All</span>
+            </button>  
             {{/if}}
 
         </div>
@@ -303,12 +309,14 @@
         <div class="profile-btns" id="right">
             {{#if isMentee}}
                 {{#if imHome}}
-                    <button type="button" class="btn btn-primary" onclick="location.href = '/myMentor'">My Mentor</button>
+                    <button type="button" class="btn btn-primary" onclick="location.href = '/emailMyMentor'">Email Mentor</button>
+                    <button type="button" class="btn btn-primary" onclick="location.href = '/myMentor'">View Mentor</button>
                     <button type="button" class="btn btn-primary" onclick="location.href = '/myProgram'">My Program</button>
                 {{/if}}
             {{else if isMentor}}
                 {{#if imHome}}
-                   <button type="button" class="btn btn-primary" onclick="location.href = '/myMentees'">My Mentees</button>
+                   <button type="button" class="btn btn-primary" onclick="location.href = '/emailMyMentees'">Email My Mentees</button>
+                   <button type="button" class="btn btn-primary" onclick="location.href = '/myMentees'">List My Mentees</button>
                    <button type="button" class="btn btn-primary" onclick="location.href = '/myProgram'">My Program</button>
                 {{/if}}
             {{/if}}
