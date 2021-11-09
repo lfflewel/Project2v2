@@ -815,11 +815,6 @@ app.post('/newTask', function (req, res) {
 
         let uploadPath;
 
-        // Dylan, I think we want to avoid res.status as it essentially requires upload i think we want maybe declare put all upload items inside the if false, if true, do nothing
-        if (!req.files || Object.keys(req.files).length === 0) {
-            return res.status(400).send('No files were uploaded.')
-        }
-
         uploadPath = __dirname + '/public/upload/companyFile/' + textFile.name;
         console.log(companyLogo);
 
