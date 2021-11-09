@@ -839,6 +839,76 @@ app.post('/newTask', function (req, res) {
 // /*----------------------------END CREATE TASK ------------------------------------------*/
 
 
+/*------------------------------------------- myProgram PAGE---------------------------------------*/
+
+// display Properties of program 
+app.get('/myProgram', function (req, res) {
+    if (req.session.loggedin) {  // NOT CORRECT
+        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ?`, [activeUserId], function (err, results) {
+            console.log(results);
+            if (err) throw err;
+
+            console.log(results);
+            res.render('myProgram', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+        });
+    };
+});
+
+app.post('/viewSelectedMilestone', function (req, res) {
+    if (req.session.loggedin) {  // NOT CORRECT
+
+        let selectedMilestone = req.body.mId;
+        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ? and mId = ?`, [activeUserId, selectedMilestone], function (err, results) {
+            console.log(results);
+            if (err) throw err;
+
+            console.log(results);
+            res.render('myProgMilestone', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+        });
+    };
+});
+
+
+app.post('/viewSelectedMileTask', function (req, res) {
+    if (req.session.loggedin) {  // NOT CORRECT
+
+        let selectedTask = req.body.tId;
+        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ? and tId = ?`, [activeUserId, selectedTask], function (err, results) {
+            console.log(results);
+            if (err) throw err;
+
+            let status = ['Pending', 'In Progress', 'Complete'];
+
+            console.log(results);
+            res.render('myMileTask', {results, status, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+        });
+    };
+});
+
+// TODO: STILL NEED TO DO THIS PART. NOT SURE WHAT FUNCTION WE NEED FOR THIS
+app.post('/updateMyProgram', function (req, res) {
+    if (req.session.loggedin) {
+        // ADD UPDATE QUERY HERE
+
+        // ADD EMAIL NOTIIFCATION
+
+
+        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Task on tmId = mId WHERE uId = ?`, [activeUserId], function (err, results) {
+                console.log(results);
+                if (err) throw err;
+
+                // programList.hbs is not created yet. Create it once userList is perfected
+                res.render('myProgram', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+            });
+    };
+});
+
+
+
+/*-------------------------------------------END myProgram PAGE---------------------------------------*/
+
+
+
 /* -------------------------------EMAILING----------------------------------------------- */
 
 app.get('/emailMyMentees', function(req, res) {

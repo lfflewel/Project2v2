@@ -63,32 +63,32 @@
         </div>
 
             {{#each results}}
-                    <p>{{this.pName}}</p>
-                    <p>{{this.pDesc}}</p>
+                    <p>Project: {{this.pName}}</p>
+                    <p>{{this.mId}}</p>
+                    <p>Milestone:  {{this.mName}}</p>
+                    <p>Milestone Desc: {{this.mDesc}}</p>
             {{/each}}
 
         <table class="table table-bordered">
-            <p>Milestones</p>
+            <p>Tasks</p>
             <tbody>
                 <thead>
                     <tr>
-                        <th scope="col">Milestone Id</th>
-                        <th scope="col">Milestone Ordinal</th>
-                        <th scope="col">Milestone Name</th>
-                        <th scope="col">Milestone Description</th>
+                        <th scope="col">Task Id</th>
+                        <th scope="col">Task Ordinal</th>
+                        <th scope="col">Task Desc</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
              {{#each results}}
                     <tr>
-                        <td>{{this.mId}}</td>
-                        <td>{{this.mOrdinal}}</td>
-                        <td>{{this.mName}}</td>
-                        <td>{{this.mDesc}}</td>
+                        <td>{{this.tId}}</td>
+                        <td>{{this.tName}}</td>
+                        <td>{{this.tDesc}}</td>
                         <td>
-                            <form method="POST" action="/viewSelectedMilestone"> 
+                            <form method="POST" action="/viewSelectedMileTask"> 
                                 <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
-                                <input name="mId" type="hidden" value="{{this.mId}}"></input>
+                                <input name="tId" type="hidden" value="{{this.tId}}"></input>
                             </form>
                         </td>
                     </tr>

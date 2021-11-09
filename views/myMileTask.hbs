@@ -63,38 +63,54 @@
         </div>
 
             {{#each results}}
-                    <p>{{this.pName}}</p>
-                    <p>{{this.pDesc}}</p>
-            {{/each}}
+                    <p>Project: {{this.pName}}</p>
+                    <p>{{this.mId}}</p>
+                    <p>Milestone:  {{this.mName}}</p>
+                    <p>Milestone Desc: {{this.mDesc}}</p>
+                    <p>Task:  {{this.tName}}</p>
+                    <p>Task Descrition: {{this.tDesc}}</p>
+                    <p>Task Details: {{this.tText}}</p>
+                    <p>Task File: {{this.tFile}}</p>
+            {{!-- {{/each}} --}}
+ 
+                    <div>
+                        <label> Status </label>
+                        <select id="taskStatus" name="taskStatus" > // still working on it
+                            {{!-- <option value="0">{{this.uRole}}</option> --}}
+                            <option value="0">{{this.status}}</option>
+                {{/each}}
 
-        <table class="table table-bordered">
-            <p>Milestones</p>
+                {{#each status}}
+                            <option value="{{this}}">{{this}}</option>
+                {{/each}}
+                        </select>
+                   </div>
+        {{!-- <table class="table table-bordered">
+            <p>Tasks</p>
             <tbody>
                 <thead>
                     <tr>
-                        <th scope="col">Milestone Id</th>
-                        <th scope="col">Milestone Ordinal</th>
-                        <th scope="col">Milestone Name</th>
-                        <th scope="col">Milestone Description</th>
+                        <th scope="col">Task Id</th>
+                        <th scope="col">Task Ordinal</th>
+                        <th scope="col">Task Desc</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
              {{#each results}}
                     <tr>
-                        <td>{{this.mId}}</td>
-                        <td>{{this.mOrdinal}}</td>
-                        <td>{{this.mName}}</td>
-                        <td>{{this.mDesc}}</td>
+                        <td>{{this.tId}}</td>
+                        <td>{{this.tName}}</td>
+                        <td>{{this.tDesc}}</td>
                         <td>
-                            <form method="POST" action="/viewSelectedMilestone"> 
+                            <form method="POST" action="/viewSelectedMileTask"> 
                                 <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
-                                <input name="mId" type="hidden" value="{{this.mId}}"></input>
+                                <input name="tId" type="hidden" value="{{this.tId}}"></input>
                             </form>
                         </td>
-                    </tr>
-                {{/each}}
-            </tbody>
-        </table>
+                    </tr> --}}
+                {{!-- {{/each}} --}}
+            {{!-- </tbody> --}}
+        {{!-- </table> --}}
     </div>
 </body>
 
