@@ -7,18 +7,22 @@
     <style>
         /* Login */
         @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
         * {
             box-sizing: border-box;
             margin: 0;
             font-family: 'Poppins', sans-serif;
         }
+
         html {
             background: linear-gradient(149deg, rgba(185, 168, 255, 1) 0%, rgba(214, 234, 255, 1) 48%, rgba(255, 225, 124, 1) 100%);
             height: 100%;
         }
+
         body {
             margin: 30px;
         }
+
         .body-container {
             width: 80%;
             display: flex;
@@ -28,6 +32,7 @@
             height: 93vh;
             margin: auto;
         }
+
         .container {
             width: 80%;
             display: flex;
@@ -37,17 +42,21 @@
             height: 93vh;
             margin: auto;
         }
+
         .desktop {
             width: 50%;
             background-color: #ffffff;
         }
+
         #loginCover {
             background-color: #ffe17c;
         }
+
         #signupCover {
             background-color: #a298db;
             color: #FFFFFF;
         }
+
         .cover-container,
         .form-container {
             display: flex;
@@ -56,9 +65,11 @@
             height: 100%;
             justify-content: center;
         }
+
         input.input-box:first-child {
             margin-top: 30px;
         }
+
         input.input-box {
             width: 350px;
             display: block;
@@ -70,9 +81,11 @@
             outline: none;
             transition: box-shadow 0.5s;
         }
+
         .form input:focus {
             box-shadow: 5px 5px 15px #a8a8a8;
         }
+
         .switch-btn {
             font-size: 20px;
             padding: 10px 55px;
@@ -86,12 +99,15 @@
             transition: box-shadow 0.5s;
             outline: none;
         }
+
         #loginCover .switch-btn {
             background-color: #a298db;
         }
+
         #signupCover .switch-btn {
             background-color: #e8c757;
         }
+
         input[type=button],
         input[type=submit] {
             margin: auto;
@@ -106,39 +122,48 @@
             cursor: pointer;
             width: 350px;
         }
+
         .mobile {
             display: none;
             background-color: coral;
         }
+
         .hide {
             display: none;
         }
+
         /* Log In Section */
         #login-section {
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
         }
+
         #login-section h1 {
             color: black;
             font-size: 50px;
         }
+
         /* Sign Up Section */
         #signup-section {
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
         }
+
         #signup-section h1 {
             font-size: 50px;
         }
+
         form {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+
         @media (max-width: 768px) {
             .desktop {
                 display: none;
             }
+
             .mobile {
                 display: flex;
                 width: 100%;
@@ -147,18 +172,22 @@
                 background-size: cover;
                 background-repeat: no-repeat;
             }
+
             .mobile p {
                 font-size: 25px;
             }
         }
+
         @media (max-width: 480px) {
             .mobile {
                 background-color: red !important;
             }
+
             .mobile p {
                 font-size: 15px;
             }
         }
+
         span {
             position: absolute;
             margin-left: 300px;
@@ -219,7 +248,7 @@
 
     <section class="mobile">
     </section>
-   
+
     <script src="index.js"></script>
     <script>
         // show/ hide password
@@ -240,5 +269,3 @@
 </body>
 
 </html>
-
-
