@@ -1042,3 +1042,80 @@ function notify() {
             // res.render('contact', {activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, msg:('Email has been sent')});
     });
 };
+
+/*-------------------------------------------ASSIGN USER---------------------------------------*/
+
+// display page
+app.get('/assignUser', function (req, res) {
+    if (req.session.loggedin) {
+
+
+        pool.query('SELECT * FROM Program WHERE cId=? and pId=?', [companyId, selectedPId], function (err, programs) {
+
+            if (err) throw err;
+
+            pool.query('SELECT * FROM User WHERE ucId=? AND uRole="Mentor" AND upId is NULL', [companyId], function (err, mentors) {
+                if (err) throw err;
+
+
+                pool.query('SELECT * FROM User WHERE ucId=? AND uRole="Mentee" AND upId is NULL', [companyId], function (err, mentees) {
+                    if (err) throw err;
+                    res.render('assignUser', { programs, mentors, mentees, activeUserFullName, programName, companyName, companyLogo, todayDate });
+                })
+            })
+
+
+        })
+
+
+    };
+});
+
+
+// assign user function
+app.post('/assignUser', function (req, res) {
+    let mentorName = req.body.mentorName;
+    let mentorFName = mentorName.toString().split(",")[0];
+    let mentorLName = mentorName.toString().split(",")[1];
+
+    let menteeName = req.body.menteeName;
+    let menteeFName = menteeName.toString().split(",")[0];
+    let menteeLName = menteeName.toString().split(",")[1];
+
+
+    pool.query('SELECT uId FROM User WHERE uFName=? and uLName=? and uRole="Mentor"', [mentorFName, mentorLName], function (err, mentor) {
+
+        if (err) {
+            console.log(err)
+            res.render('assignUser', { activeUserFullName, programName, companyName, companyLogo, todayDate });
+        }
+        else {
+            let mentorUId = mentor[0].uId;
+            console.log(mentorUId);
+
+            // Get uId for mentee and store in local variable menteeUId
+            pool.query('SELECT uId FROM User WHERE uFName=? and uLName=? and uRole="Mentee"', [menteeFName, menteeLName], function (err, mentee) {
+                if (err) {
+                    console.log(err)
+                    res.render('assignUser', { activeUserFullName, programName, companyName, companyLogo, todayDate });
+                }
+                else {
+                    console.log(mentee[0].uId)
+                    let menteeUId = mentee[0].uId;
+                    pool.query('UPDATE User SET upId=? WHERE uId = ?', [selectedPId, mentorUId], function (err, results) {
+                        if (err) throw err;
+                        console.log("Update Mentor")
+                        pool.query('UPDATE User SET upId=?, mentorId=? WHERE uId = ?', [selectedPId, mentorUId, menteeUId], function (err, results) {
+                            if (err) throw err;
+                            console.log("Update Mentee")
+                            res.redirect('/assignUser')
+                        });
+                    })
+
+                }
+            })
+        }
+    })
+})
+
+/*-------------------------------------------END ASSIGN USER---------------------------------------*/
