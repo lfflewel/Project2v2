@@ -79,12 +79,12 @@
                 {{/each}}
  
                 {{#if imHome}}
- 
+                <form action="/updateMyTaskStatus" method="POST" enctype="multipart/form-data">
                     {{#each results}}
                         <div>
                             <label> Status </label>
                             <select id="taskStatus" name="taskStatus" > // still working on it
-                                <option value="0">{{this.status}}</option>
+                                <option value="{{this.status}}">{{this.status}}</option>
                     {{/each}}
 
                     {{#each statusOptions}}
@@ -92,8 +92,8 @@
                      {{/each}}
                             </select>
                         </div>
-
- 
+                    <input type="submit" value="UPDATE" class="btn btn-primary">
+                </form>
                 {{else}}
                     {{#each results}}
                         <p> Status: {{this.status}} </p>

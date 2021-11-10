@@ -488,11 +488,6 @@ app.post('/updateUser', function (req, res) {
         }
 
         let uploadPath;
-
-        // if (!req.files || Object.keys(req.files).length === 0) {
-        //     return res.status(400).send('No files were uploaded.');
-        // };
-       
         uploadPath = __dirname + '/public/upload/profilePhoto/' + updatePhoto.name;
 
         updatePhoto.mv(uploadPath, function (err) {
@@ -501,7 +496,7 @@ app.post('/updateUser', function (req, res) {
                 console.log("Update")
             });
         });
-           
+      
 
 
         pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?, mentorId=? WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, updateUserMentor, updateUserId], function (err, results) {
@@ -686,7 +681,7 @@ app.post('/programsList', function (req, res) {
 // display program page
 app.get('/newProgram', function (req, res) {
     if (req.session.loggedin) {
-        pool.query('SELECT * FROM Program JOIN Company ON Program.cId = Company.cId WHERE cName=?', [companyName], function (err, results) {
+        pool.query('SELECT * FROM Program JOIN Company ON Program.pcId = Company.cId WHERE cId=?', [companyId], function (err, results) {
             
             if (err) throw err;
             res.render('newProgram', { results, activeUserFullName, programName, companyName, companyLogo, todayDate });
@@ -825,7 +820,9 @@ app.post('/newTask', function (req, res) {
         textFile = req.files.file;  
 
         let uploadPath;
-
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).send('No files were uploaded.')
+         }
         uploadPath = __dirname + '/public/upload/companyFile/' + textFile.name;
         console.log(companyLogo);
 
@@ -912,29 +909,29 @@ app.post('/viewSelectedMileTask', function (req, res) {
 
 
 // TODO: STILL NEED TO DO THIS PART. NOT SURE WHAT FUNCTION WE NEED FOR THIS
-app.post('/updateMyProgram', function (req, res) {
+app.post('/updateMyTaskStatus', function (req, res) {
     if (req.session.loggedin) {
        let thisTaskStatus = req.body.taskStatus;
         // Select element on orm will only display if imHome
-        pool.query('UPDATE UserMilestonTask SET status = ? WHERE uuId = ? and umId = ? and utId = ?', [thisTaskStatus, thisUserId, thisMilestoneNameId, thisTaskId], function (err, results) {
+        pool.query('UPDATE UserMilestoneTask SET status = ? WHERE uuId = ? and umId = ? and utId = ?', [thisTaskStatus, thisUserId, thisMilestoneId, thisTaskId], function (err, results) {
             console.log
             if (err) throw err;
 
  
             // Update successfull, render updated program
-            pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Task on tmId = mId WHERE uId = ?`, [activeUserId], function (err, results) {
+            pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ?`, [thisUserId], function (err, results) {
                 console.log(results);
                 if (err) throw err;
 
                 // get email for mentee's mentee, then trigger email notification to mentor
-                pool.query(`SELECT uEmail FROM User WHERE uId = ?`, [result[0].mentorId], function (err, mentor) {
+                pool.query(`SELECT uEmail FROM User WHERE uId = ?`, [results[0].mentorId], function (err, mentor) {
                     console.log(mentor);
                     if (err) throw err;
 
                     notifyTo = mentor[0].uEmail;
                     notifySubject = `Mentee Progress Update`;
                     notifyText = `
-                        Mentee Name:    ${results[0].uFName} ${results[0].uLName}
+                        Mentee Name:    ${thisUserFullName}
                         Milestone Name: ${thisMilestoneName}
                         Task Name:      ${thisTaskName}
                         Task Status:    ${thisTaskStatus}
@@ -1100,7 +1097,7 @@ app.get('/assignUser', function (req, res) {
     if (req.session.loggedin) {
 
 
-        pool.query('SELECT * FROM Program WHERE cId=? and pId=?', [companyId, selectedPId], function (err, programs) {
+        pool.query('SELECT * FROM Program WHERE pcId=? and pId=?', [companyId, selectedPId], function (err, programs) {
 
             if (err) throw err;
 
@@ -1111,14 +1108,10 @@ app.get('/assignUser', function (req, res) {
                 pool.query('SELECT * FROM User WHERE ucId=? AND uRole="Mentee" AND upId is NULL', [companyId], function (err, mentees) {
                     if (err) throw err;
                     res.render('assignUser', { programs, mentors, mentees, activeUserFullName, programName, companyName, companyLogo, todayDate });
-                })
-            })
-
-
-        })
-
-
-    };
+                });
+            });
+        });
+    };   
 });
 
 
@@ -1157,15 +1150,51 @@ app.post('/assignUser', function (req, res) {
                         console.log("Update Mentor")
                         pool.query('UPDATE User SET upId=?, mentorId=? WHERE uId = ?', [selectedPId, mentorUId, menteeUId], function (err, results) {
                             if (err) throw err;
-                            console.log("Update Mentee")
+                            
+                            console.log("Update Mentee");
+
+                            // Add user's milestone and tasks to the associate table UserMilestoneTask
+                            pool.query('SELECT uId, mId, tId FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE pId = ? and uId = ? and uRole = "Mentee"', [selectedPId, menteeUId], function (err, bridgeRes) {
+                                if (err) throw err;
+
+                                for (var i = 0; i < bridgeRes.length; i++) { 
+
+                                    let uId = bridgeRes[i].uId;
+                                    let mId = bridgeRes[i].mId;
+                                    let tId = bridgeRes[i].tId;
+
+                                    console.log(uId, mId, tId)
+
+                                    pool.query(`INSERT INTO UserMilestoneTask (uuId, umId, utId, status) VALUES ("${uId}", "${mId}", "${tId}", "Pending")`, function (err, results) {
+                                        if (err) throw err;
+
+                                    });
+                                }
+                                console.log(bridgeRes.length);
+                            });                   
+    
+                            // end test
+
                             res.redirect('/assignUser')
                         });
                     })
-
                 }
-            })
+          })
         }
     })
 })
+
+// function assciateTable() {
+//     for (let i in results[i].rows) {
+//         let row = table.rows[i]
+//         //iterate through rows
+//         //rows would be accessed using the "row" variable assigned in the for loop
+//         for (let j in row.cells) {
+//           let col = row.cells[j]
+//           //iterate through columns
+//           //columns would be accessed using the "col" variable assigned in the for loop
+//         }  
+//      }
+// }
 
 /*-------------------------------------------END ASSIGN USER---------------------------------------*/
