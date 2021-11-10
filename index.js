@@ -120,6 +120,17 @@ let notifyTo;
 let notifySubject;
 let notifyText;
 
+// User Program Milestone Tasks
+let statusOptions = ["Pending", "In Progress", "Complete"];
+let thisUserId;
+let thisUserFullName;
+let thisMilestoneId;
+let thisMilestoneName;
+let thisTaskId;
+let thisTaskName;
+
+
+
 /*---------------------------------------------------------------*/
 
 /* --------------------------------- INVALID LOG IN SCREEN ---------------------------------- */
@@ -844,7 +855,15 @@ app.post('/newTask', function (req, res) {
 // display Properties of program 
 app.get('/myProgram', function (req, res) {
     if (req.session.loggedin) {  // NOT CORRECT
-        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ?`, [activeUserId], function (err, results) {
+        
+        // determine if we are looking at active user or selected user pass value to global var
+        if(!imHome){
+            thisUserId = selectedUserId;
+        }
+        else thisUserId = activeUserId;
+
+        // get user's program, milestone and task info
+        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ?`, [thisUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
 
@@ -856,11 +875,18 @@ app.get('/myProgram', function (req, res) {
 
 app.post('/viewSelectedMilestone', function (req, res) {
     if (req.session.loggedin) {  // NOT CORRECT
+        thisMilestoneId = req.body.mId;
+        thisMilestoneName;
 
-        let selectedMilestone = req.body.mId;
-        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ? and mId = ?`, [activeUserId, selectedMilestone], function (err, results) {
+        console.log('/ViewSelected Milestone...thisUserId: ', thisUserId, ' selectedMilestone: ', thisMilestoneId);
+
+        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ? and mId = ?`, [thisUserId, thisMilestoneId], function (err, results) {
             console.log(results);
             if (err) throw err;
+
+            // Get milestone and user name and pass it to global var
+            thisMilestoneName = results[0].mName;
+            thisUserFullName = results[0].uFName + ' ' + results[0].uLName;
 
             console.log(results);
             res.render('myProgMilestone', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
@@ -871,39 +897,64 @@ app.post('/viewSelectedMilestone', function (req, res) {
 
 app.post('/viewSelectedMileTask', function (req, res) {
     if (req.session.loggedin) {  // NOT CORRECT
-
-        let selectedTask = req.body.tId;
-        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ? and tId = ?`, [activeUserId, selectedTask], function (err, results) {
+        thisTaskId = req.body.tId;
+ 
+        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ? and tId = ?`, [thisUserId, thisTaskId], function (err, results) {
+             if (err) throw err;
+            // Get Task name and pass it to global var
+            thisTaskName = results[0].tName
+ 
             console.log(results);
-            if (err) throw err;
-
-            let status = ['Pending', 'In Progress', 'Complete'];
-
-            console.log(results);
-            res.render('myMileTask', {results, status, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+            res.render('myMileTask', {results, statusOptions, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
 
+
 // TODO: STILL NEED TO DO THIS PART. NOT SURE WHAT FUNCTION WE NEED FOR THIS
 app.post('/updateMyProgram', function (req, res) {
     if (req.session.loggedin) {
-        // ADD UPDATE QUERY HERE
+       let thisTaskStatus = req.body.taskStatus;
+        // Select element on orm will only display if imHome
+        pool.query('UPDATE UserMilestonTask SET status = ? WHERE uuId = ? and umId = ? and utId = ?', [thisTaskStatus, thisUserId, thisMilestoneNameId, thisTaskId], function (err, results) {
+            console.log
+            if (err) throw err;
 
-        // ADD EMAIL NOTIIFCATION
-
-
-        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Task on tmId = mId WHERE uId = ?`, [activeUserId], function (err, results) {
+ 
+            // Update successfull, render updated program
+            pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Task on tmId = mId WHERE uId = ?`, [activeUserId], function (err, results) {
                 console.log(results);
                 if (err) throw err;
 
+                // get email for mentee's mentee, then trigger email notification to mentor
+                pool.query(`SELECT uEmail FROM User WHERE uId = ?`, [result[0].mentorId], function (err, mentor) {
+                    console.log(mentor);
+                    if (err) throw err;
+
+                    notifyTo = mentor[0].uEmail;
+                    notifySubject = `Mentee Progress Update`;
+                    notifyText = `
+                        Mentee Name:    ${results[0].uFName} ${results[0].uLName}
+                        Milestone Name: ${thisMilestoneName}
+                        Task Name:      ${thisTaskName}
+                        Task Status:    ${thisTaskStatus}
+                    `;
+
+                    console.log(notifyTo);
+                    console.log(notifySubject);
+                    console.log(notifyText);
+                    notify();
+
+                }); // End get mentor's email
+
+              
                 // programList.hbs is not created yet. Create it once userList is perfected
                 res.render('myProgram', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
             });
-    };
+
+        });
+     };
 });
-
-
 
 /*-------------------------------------------END myProgram PAGE---------------------------------------*/
 
@@ -1039,7 +1090,6 @@ function notify() {
             console.log(mailOptions);
 
             return({msg:('Email has been sent')});
-            // res.render('contact', {activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, msg:('Email has been sent')});
     });
 };
 

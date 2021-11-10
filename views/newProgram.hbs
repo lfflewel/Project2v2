@@ -47,14 +47,14 @@
     .container {
         width: 80%;
         border-radius: 30px;
-        
+
         margin: auto;
         padding: 50px 80px;
         display: flex;
         flex-direction: column;
     }
 
-   
+
 
     .logo_image {
         display: block;
@@ -206,108 +206,96 @@
 
         transform: translate(130%, 10%);
     }
-    
+
     .programListContainer {
-            margin-top: 20px;
-            width: 80%;
-            
-            
-            justify-content: center;
-            align-self: center;
-            align-items: center;
-            overflow-y: scroll;
-            padding-bottom: 30px;
-            height: 500px;
-            flex-wrap: wrap;
-        }
-    
+        margin-top: 20px;
+        width: 80%;
 
+
+        justify-content: center;
+        align-self: center;
+        align-items: center;
+        overflow-y: scroll;
+        padding-bottom: 30px;
+        height: 500px;
+        flex-wrap: wrap;
+    }
 </style>
-
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 
-
-
-<body>
-    <div class="container">
-        <div class="top">
-            <div id="greetings">
-
-                <h5>{{companyName}}</h5>
-
-                {{#if companyLogo}}
-                <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
-                {{else}}
-                <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
-                {{/if}}
-
-
-                <p><b>You are log in as {{activeUserFullName}}.</b></p>
-                <h6>Today: {{todayDate}}</h6>
-                {{!-- <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p> --}}
+    <body>
+        <div class="container">
+            <div class="top">
+                <div id="greetings">
+                    <h5>{{companyName}}</h5>
+                    {{#if companyLogo}}
+                    <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+                    {{else}}
+                    <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+                    {{/if}}
+                    <p><b>You are log in as {{activeUserFullName}}.</b></p>
+                    <h6>Today: {{todayDate}}</h6>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="navigation">
-        <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
-            <img src="/img/homeIcon.png">
-            <span>HOME</span>
-        </button>
-        <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
-            <img src="/img/logOutIcon.png">
-            <span>LOG OUT</span>
-        </button>
-    </div>
-
-    <main>
-
-        <div class="body-container">
-            <h1>Program Creator</h1>
-            <p>To create a Program, type the Program name in the field below and click the create program button</p>
-            <p>Once you create the Program, you will be prompted to add milestones and tasks to this program.</p>
-            <form action="/newProgram" method="POST">
-                <div class="form-row">
-                    <div class="col">
-                        <input type="text" class="form-control" name="programName" placeholder="Program Name" required>
-                    </div>
-                    <div class="col">
-                        <input type="text" class="form-control" name="programDesc" placeholder="Program Description"
-                            required>
-                    </div>
-
-                    <div class="button">
-                        <button type="submit" name="createprogram">Create New Program</button>
-
-                    </div>
-                </div>
-            </form>
+        <div id="navigation">
+            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                <img src="/img/homeIcon.png">
+                <span>HOME</span>
+            </button>
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
         </div>
 
-        <div class="programListContainer">
-            {{#each results}}
-            
+        <main>
+
+            <div class="body-container">
+                <h1>Program Creator</h1>
+                <p>To create a Program, type the Program name in the field below and click the create program button</p>
+                <p>Once you create the Program, you will be prompted to add milestones and tasks to this program.</p>
+                <form action="/newProgram" method="POST">
+                    <div class="form-row">
+                        <div class="col">
+                            <input type="text" class="form-control" name="programName" placeholder="Program Name" required>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control" name="programDesc" placeholder="Program Description"
+                                required>
+                        </div>
+
+                        <div class="button">
+                            <button type="submit" name="createprogram">Create New Program</button>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="programListContainer">
+                {{#each results}}
+
                 <form action="/abc" method="POST">
                     <input type="hidden" name="selectedProgram" value="{{this.pName}}">
                     <button class="btn btn-primary" id="selectedProgram" type="submit" formaction="/getProgram">
 
                         <i class="bi bi-folder2-open " style="font-size:70px;"></i>
-                        
+
                         <h3>{{this.pName}}</h3>
-                        
+
                     </button>
                 </form>
 
-            {{/each}}
+                {{/each}}
 
-        </div>
+            </div>
 
-
-    </main>
-    <script src="index.js"></script>
-</body>
-
+        </main>
+        <script src="index.js"></script>
+    </body>
 </html>

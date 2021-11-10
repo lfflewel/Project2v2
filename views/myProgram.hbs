@@ -62,10 +62,10 @@
             </button>
         </div>
 
-            {{#each results}}
-                    <p>{{this.pName}}</p>
-                    <p>{{this.pDesc}}</p>
-            {{/each}}
+        {{#each results}}
+        <p>{{this.pName}}</p>
+        <p>{{this.pDesc}}</p>
+        {{/each}}
 
         <table class="table table-bordered">
             <p>Milestones</p>
@@ -79,24 +79,21 @@
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
-             {{#each results}}
-                    <tr>
-                        <td>{{this.mId}}</td>
-                        <td>{{this.mOrdinal}}</td>
-                        <td>{{this.mName}}</td>
-                        <td>{{this.mDesc}}</td>
-                        <td>
-                            <form method="POST" action="/viewSelectedMilestone"> 
-                                <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
-                                <input name="mId" type="hidden" value="{{this.mId}}"></input>
-                            </form>
-                        </td>
-                    </tr>
+                {{#each results}}
+                <tr>
+                    <td>{{this.mId}}</td>
+                    <td>{{this.mOrdinal}}</td>
+                    <td>{{this.mName}}</td>
+                    <td>{{this.mDesc}}</td>
+                    <td>
+                        <form method="POST" action="/viewSelectedMilestone">
+                            <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
+                            <input name="mId" type="hidden" value="{{this.mId}}"></input>
+                        </form>
+                    </td>
+                </tr>
                 {{/each}}
             </tbody>
         </table>
     </div>
 </body>
-
-
-
