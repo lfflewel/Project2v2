@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        #navigation {
+            height: 200px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        select {
+            width: 80%;
+            float: right;
+            margin-bottom: 20px;
+            font-size: 20px;
+            text-align: center;
+            border: 0;
+            outline: none;
+            background-color: #a298db;
+            color: #FFFFFF;
+        }
+
+
+        /* fileUpload */
+        .file {
+            opacity: 0;
+            width: 0.1px;
+            height: 0.1px;
+            position: absolute;
+        }
+
+        .fileUpload {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 50px;
+            border-radius: 25px;
+            background: linear-gradient(40deg, #ff6ec4, #7873f5);
+            box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform .2s ease-out;
+
+        }
+
+        .buttonphoto {
+            width: 100%
+        }
+
+        .container-fileUpload {
+            width: 200px justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 80px;
+        }
+
+        input {
+            float: right;
+            width: 90%;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="top">
+            <div id="greetings">
+
+                <h5>{{companyName}}</h5>
+
+                {{#if companyLogo}}
+                <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+                {{else}}
+                <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+                {{/if}}
+
+
+                <p><b>You are log in as {{activeUserFullName}}.</b></p>
+                <h6>Today: {{todayDate}}</h6>
+                {{!-- <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p> --}}
+            </div>
+        </div>
+
+        <div id="navigation">
+            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                <img src="/img/homeIcon.png">
+                <span>HOME</span>
+            </button>
+
+
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
+        </div>
+
+        <div class="bottom">
+
+            <div>
+
+
+                <form action="/assignUser" method="POST">
+                    {{!-- <label> Program Name </label><br>
+                    <select id="assignProgram">
+                        <option value="0">Select Program</option>
+                        {{#each programs}}
+
+                        <option value="{{pName}}">{{pName}}</option>
+                        {{/each}}
+                    </select> --}}
+
+
+                    <div>
+                    <label>Mentor Name</label><br>
+                    <select name="mentorName">
+                          <option value="0">Select Mentor Name</option>
+                        {{#each mentors}}
+                       
+                        <option value="{{uFName}},{{uLName}}">{{uFName}} {{uLName}}</option>
+                       {{/each}}
+                    </select>
+
+                    
+                    </div>
+
+                    <div>
+                    <label>Mentee Name</label><br>
+                    <select name="menteeName">
+                          <option value="0">Select Mentee Name</option>
+                        {{#each mentees}}
+                       
+                        <option value="{{uFName}},{{uLName}}">{{uFName}} {{uLName}}</option>
+                       {{/each}}
+                    </select>
+
+                    
+                    </div>
+
+
+
+
+
+
+                    <input type="submit" value="Assign" class="btn btn-primary">
+                </form>
+               
+
+                    {{!-- <label> Mentee</label><br>
+                    <select name="assignMentee">
+                        <option value="0">Select Mentee</option>
+                        {{#each mentees}}
+                        <option value="{{uFName}} {{uLName}}">{{uFName}} {{uLName}}</option>
+                        {{/each}}
+                    </select>
+                    <input type="submit" value="Assign" class="btn btn-primary">
+                </form> --}}
+
+
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
