@@ -829,30 +829,35 @@ app.post('/newTask', function (req, res) {
         let taskName = req.body.taskName;
         let taskDesc = req.body.taskDesc;
         let taskText = req.body.taskText;
-        textFile = req.files.file;  
+       
 
-        let uploadPath;
+         // let user create task w/out file 
         if (!req.files || Object.keys(req.files).length === 0) {
-            return res.status(400).send('No files were uploaded.')
-         }
-        uploadPath = __dirname + '/public/upload/companyFile/' + textFile.name;
-        console.log(companyLogo);
+            pool.query(`INSERT INTO Tasks (tName, tDesc, tText, tmId) VALUES ("${taskName}", "${taskDesc}", "${taskText}", ${selectedMId})`, function (err, results) {
+                if (err) throw err;
 
-        // user mv(to place file on the server)
-        textFile.mv(uploadPath, function (err) {
-            if (err) return res.status(500).send(err);
-
-            pool.query(`INSERT INTO Tasks (tName, tDesc, tText, tFile, tmId) VALUES ("${taskName}", "${taskDesc}", "${taskText}", "${textFile.name}", ${selectedMId})`, function (err, results) {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    console.log("Program Inserted");
-                   res.redirect('/addTask');
-                }
+                console.log("Task Inserted Without File");
+                res.redirect('/addTask');
             })
-        })
-};
+        }
+        // let user create task with file 
+        else {
+            let textFile = req.files.file;
+            let uploadPath;
+            uploadPath = __dirname + '/public/upload/companyFile/' + textFile.name;
+
+            textFile.mv(uploadPath, function (err) {
+                if (err) return res.status(500).send(err);
+
+                pool.query(`INSERT INTO Tasks (tName, tDesc, tText, tFile, tmId) VALUES ("${taskName}", "${taskDesc}", "${taskText}","${textFile.name}", ${selectedMId})`, function (err, results) {
+                    if (err) throw err;
+                    console.log("Task Inserted with File");
+                    res.redirect('/addTask');
+                })
+            });
+
+        }
+    }
 });
 
 
