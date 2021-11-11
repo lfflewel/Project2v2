@@ -163,7 +163,7 @@ app.post('/getStarted', function (req, res) {
 // create a company info
 app.post('/initCompany', function (req, res) {
 	companyName = req.body.companyName;
-	companyLogo = req.files.file;
+	
     let adminUserName = req.body.adminUserName;
 	adminFName = req.body.adminFName;
 	adminLName = req.body.adminLName;
@@ -172,52 +172,68 @@ app.post('/initCompany', function (req, res) {
 	adminPW = req.body.adminPW;
 
 	pool.query(`SELECT * FROM User WHERE username = ?`, [adminUserName], function (err, results, fields) {
-		if (err) throw err;
-        	if (results.length > 0) {
-		   console.log('UserName already exists');
-		    }
-		else {
-		    let uploadPath;
-            
-            	   if (!req.files || Object.keys(req.files).length === 0) {
-                      return res.status(400).send('No files were uploaded.')
-                   }
 
-            	   uploadPath = __dirname + '/public/upload/companyLogo/' + companyLogo.name;
-                   console.log(companyLogo);
-                   
-                   // user mv(to place file on the server)
-            	    companyLogo.mv(uploadPath, function (err) {
-                        if (err) return res.status(500).send(err);
-                        
-                        // INSERT COMPANY INFO
-                        pool.query(`INSERT INTO Company (cName, cLogo) VALUES ("${companyName}", "${companyLogo.name}")`, function (err, results) {
-                            if (err) throw err;
-                            companyId = results.insertId;
-                            console.log("Created Account")
-				
-		
-                            // INSERT ADMIN INFO
-                            pool.query(`INSERT INTO User (userName, uFName, uLName, uEmail, uPass, uRole, uJob, ucId) VALUES ("${adminUserName}","${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${adminJob}", "${companyId}")`, function(err, results) {
-                                if (err) throw (err);
+        if (results.length > 0) {
+            console.log('UserName already exists');
+        }
+        else {
+            // let user create account w/out logo
+            if (!req.files || Object.keys(req.files).length === 0) {
+                pool.query(`INSERT INTO Company (cName) VALUES ("${companyName}")`, function (err, results) {
+                    if (err) throw err;
+                    companyId = results.insertId;
+                    console.log("Created Account Without Logo")
 
-                                // notficaton email
-                                notifyTo = adminEmail;
-                                notifySubject = 'New User Activation';
-                                notifyText = `Your account had been activated. You may now login with username ${adminUserName} and your temporary password ${adminPW}`;
 
-                                console.log(notifyTo);
-                                console.log(notifySubject);
-                                console.log(notifyText);
-                                notify();
-                                
-                                console.log("Added ADMIN INFO")
-				            });
-			            });
-                    });
+                    // INSERT ADMIN INFO
+                    pool.query(`INSERT INTO User (userName, uFName, uLName, uEmail, uPass, uRole, uJob, ucId) VALUES ("${adminUserName}","${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${adminJob}", "${companyId}")`, function (err, results) {
+                        if (err) throw (err);
+                    })
+                })
+            }
+            // let user create account with logo
+            else {
+                companyLogo = req.files.file;
+                let uploadPath;
+
+                uploadPath = __dirname + '/public/upload/companyLogo/' + companyLogo.name;
+                console.log(companyLogo);
+
+                // user mv(to place file on the server)
+                companyLogo.mv(uploadPath, function (err) {
+
+                    // INSERT COMPANY INFO
+                    pool.query(`INSERT INTO Company (cName, cLogo) VALUES ("${companyName}", "${companyLogo.name}")`, function (err, results) {
+                        if (err) throw err;
+                        companyId = results.insertId;
+                        console.log("Created Account With Logo")
+
+
+                        // INSERT ADMIN INFO
+                        pool.query(`INSERT INTO User (userName, uFName, uLName, uEmail, uPass, uRole, uPhoto, uJob, ucId) VALUES ("${adminUserName}","${adminFName}", "${adminLName}", "${adminEmail}", "${adminPW}", "Admin", "${companyLogo.name}", "${adminJob}", "${companyId}")`, function (err, results) {
+                            if (err) throw (err);
+                        })
+                    })
+                })
+
+
+                // notficaton email
+                notifyTo = adminEmail;
+                notifySubject = 'New User Activation';
+                notifyText = `Your account had been activated. You may now login with username ${adminUserName} and your temporary password ${adminPW}`;
+
+                console.log(notifyTo);
+                console.log(notifySubject);
+                console.log(notifyText);
+                notify();
+
+                console.log("Added ADMIN INFO")
+
+
+            }
             res.redirect('/');
-        };
-	});
+        }
+    })
 });
 
 /*-------------------------------------END COMPANY SETUP-----------------------------------------*/
