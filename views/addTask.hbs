@@ -285,19 +285,20 @@
 
                     </tr>
                 </thead>
-                {{#each results}}
+                
                 <tbody>
+                {{#each results}}
                     <tr>
                         <td>{{this.tName}}</td>
                         <td>{{this.tDesc}}</td>
                         <td>{{this.tText}}</td>
                         {{!-- allow user to download a file  --}}
                         <td><a href="/public/upload/companyFile/{{this.tFile}}" download="{{this.tFile}}">{{this.tFile}}</a></td>
-
+                         {{/each}}
                     </tr>
                 </tbody>
             </table>
-            {{/each}}
+           
 
         </div>
 
