@@ -372,32 +372,7 @@ app.post('/createUser', function (req, res) {
     newUserRole = req.body.userRole;
     newUserJob = req.body.userJob;
     newUserAbout= req.body.userAbout;
-    let newUserPhoto;
-    let uploadPath;
-
-    // Handle File Upload
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.')
-    };
-
-    newUserPhoto = req.files.file;
-    uploadPath = __dirname + '/public/upload/profilePhoto/' + newUserPhoto.name;
-    console.log(newUserPhoto);
-
-    // user mv(to place file on the server)
-    newUserPhoto.mv(uploadPath, function (err) {
-        if (err) return res.status(500).send(err);
-    });
-    // End File Section
-
-    console.log(newUserUserName);
-    console.log(newUserFName);
-    console.log(newUserLName);
-    console.log(newUserEmail);
-    console.log(newUserPW);
-    console.log(newUserRole);
-    console.log(newUserJob);
-    console.log(newUserPhoto);
+    
 
     pool.query('SELECT * FROM User WHERE username = ?', [newUserUserName], function (err, results, fields) {
         if (err) throw err;
@@ -409,32 +384,53 @@ app.post('/createUser', function (req, res) {
             console.log('UserName already exists');
         }
         else {
-            //save dato into the database
-            pool.query(`INSERT INTO User (userName, uFName, uLName, uEmail, uPass, uRole, uJob, uAbout, uPhoto, ucId) VALUES 
-                ("${newUserUserName}","${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserAbout}","${newUserPhoto.name}", "${companyId}")`, function (err, results) {
-                if (err) {
-                    console.log(err);
-                }
-                else {
-                    var newUserId = results.insertId
-                    console.log(`New User Id: ${newUserId}`);
-                }
-                
-                // notficaton email
-                notifyTo = newUserEmail;
-                notifySubject = 'New User Activation';
-                notifyText = `Your account had been activated. You may now login with username ${newUserUserName} and your temporary password ${newUserPW}`;
 
-                console.log(notifyTo);
-                console.log(notifySubject);
-                console.log(notifyText);
-                notify();
+            if (!req.files || Object.keys(req.files).length === 0) {
+                pool.query(`INSERT INTO User (userName, uFName, uLName, uEmail, uPass, uRole, uJob, uAbout, ucId) VALUES ("${newUserUserName}","${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserAbout}", "${companyId}")`, function (err, results) {
+                    if (err) throw err;
+                    console.log("Add User Without Photo")
+                    res.render('addUser', { results, activeUserFullName, companyName, companyLogo, roles, alert: 'User added successfully.' });
+                })
+            }
+            else {
+                let newUserPhoto;
+                let uploadPath;
 
-                res.render('addUser', {results, activeUserFullName, companyName, companyLogo, roles, alert:'User added successfully.' });
-            }); 
-        }; 
-    }); 
-}); 
+                // Handle File Upload
+
+                newUserPhoto = req.files.file;
+                uploadPath = __dirname + '/public/upload/profilePhoto/' + newUserPhoto.name;
+                console.log(newUserPhoto);
+
+                // user mv(to place file on the server)
+                newUserPhoto.mv(uploadPath, function (err) {
+                    if (err) return res.status(500).send(err);
+                    //save dato into the database
+                    pool.query(`INSERT INTO User (userName, uFName, uLName, uEmail, uPass, uRole, uJob, uAbout, uPhoto, ucId) VALUES ("${newUserUserName}","${newUserFName}", "${newUserLName}", "${newUserEmail}", "${newUserPW}", "${newUserRole}", "${newUserJob}", "${newUserAbout}","${newUserPhoto.name}", "${companyId}")`, function (err, results) {
+                        if (err) throw err;
+
+                        var newUserId = results.insertId
+                        console.log(`New User Id: ${newUserId}`);
+                        console.log("Add User With Photo")
+                        res.render('addUser', { results, activeUserFullName, companyName, companyLogo, roles, alert: 'User added successfully.' });
+                    })
+
+                })
+            }
+
+
+            // notficaton email
+            notifyTo = newUserEmail;
+            notifySubject = 'New User Activation';
+            notifyText = `Your account had been activated. You may now login with username ${newUserUserName} and your temporary password ${newUserPW}`;
+
+            console.log(notifyTo);
+            console.log(notifySubject);
+            console.log(notifyText);
+            notify();
+        }
+    })
+})
 
 // update user photo from edituser page
 ///****IMPORTANT- NEED TO COME BACK TO THIS NEEDS TO KNOW IDENTIFY IF ACTIVEUSER OR SELECTED USER*/
