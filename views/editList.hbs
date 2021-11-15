@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit User </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        #navigation {
+            height: 200px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        select {
+            width: 90%;
+            float: right;
+            margin-bottom: 20px;
+            font-size: 20px;
+            text-align: center;
+            border: 0;
+            outline: none;
+            background-color: #a298db;
+            color: #FFFFFF;
+        }
+
+        /* fileUpload */
+        .file {
+            opacity: 0;
+            width: 0.1px;
+            height: 0.1px;
+            position: absolute;
+        }
+
+        .fileUpload {
+            display: block;
+            position: relative;
+            width: 100%;
+            height: 50px;
+            border-radius: 25px;
+            background: linear-gradient(40deg, #ff6ec4, #7873f5);
+            box-shadow: 0 4px 7px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform .2s ease-out;
+
+        }
+
+        .buttonphoto {
+            width: 100%
+        }
+
+        .container-fileUpload {
+            width: 200px justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            float: right;
+            width: 90%;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="top">
+            <div id="greetings">
+
+                <h5>{{companyName}}</h5>
+
+                {{#if companyLogo}}
+                <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+                {{else}}
+                <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+                {{/if}}
+
+
+                <p><b>You are log in as {{activeUserFullName}}.</b></p>
+                <h6>Today: {{todayDate}}</h6>
+                {{!-- <p>PLACEHOLDER FOR SOMETHING. THIS PAGE WILL DISPLAY DIFFERANTLY FOR EACH ROLE</p> --}}
+            </div>
+        </div>
+
+        <div id="navigation">
+            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                <img src="/img/homeIcon.png">
+                <span>HOME</span>
+            </button>
+
+
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
+        </div>
+
+        {{#if alert}}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{alert}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {{/if}}
+
+
+        {{#if isProgramListView}}
+        <div>
+            <form action="/updateProgram" method="POST">
+                {{#each programs}}
+                <label> Program Name </label>
+                <input type="text" placeholder="Enter Program Name" name="updatePN" value="{{this.pName}}" required><br>
+
+                <label> Program Description </label>
+                <input type="text" placeholder="Enter Program Description" name="updatePD" value="{{this.pDesc}}"
+                    required><br>
+
+                <input type="submit" value="UPDATE" class="btn btn-primary">
+                {{/each}}
+            </form>
+        </div>
+        {{/if}}
+
+        {{#if isMilestoneListView}}
+        <div>
+            <form action="/updateMilestone" method="POST">
+                {{#each milestones}}
+                <label> Program Name </label>
+                <input type="text" placeholder="Enter Milestone Name" name="updateMN" value="{{this.mName}}"
+                    required><br>
+
+                <label> Program Description </label>
+                <input type="text" placeholder="Enter Milestone Description" name="updateMD" value="{{this.mDesc}}"
+                    required><br>
+
+                <input type="submit" value="UPDATE" class="btn btn-primary">
+                {{/each}}
+            </form>
+        </div>
+        {{/if}}
+
+        {{#if isTaskListView}}
+        <div>
+
+            <div class"container-fileUpload">
+                <form action="/updateTask" method="POST" enctype="multipart/form-data">
+                    {{#each tasks}}
+                    <div class="form-group">
+                        <label for="exampleFormControlFile1">Upload File</label>
+                        <input type="file" class="form-control-file" name="file" id="exampleFormControlFile1">
+                    </div>
+            </div>
+
+            <label> Task Name </label>
+            <input type="text" placeholder="Enter Task Name" name="updateTN" value="{{this.tName}}" required>
+
+            <label> Task Description </label>
+            <input type="text" placeholder="Enter Task Description" name="updateTD" value="{{this.tDesc}}" required><br>
+
+            <label> Task Text </label>
+            <input type="text" placeholder="Enter Task Text" name="updateTT" value="{{this.tText}}" required><br>
+
+
+
+            <input type="submit" value="UPDATE" class="btn btn-primary">
+            {{/each}}
+            </form>
+
+        </div>
+        {{/if}}
+
+
+        {{#if isTaskStatusView}}
+        <div>
+            {{#each status}}
+            <form action="/updateTaskStatus" method="POST">
+
+                <label> Task Name </label>
+                <input type="text" placeholder="Enter Task Name" name="updateTN1" value="{{this.tName}}" required>
+
+
+                <div>
+                    <label> Task Status </label>
+                    <select id="selectStatus" name="updateStatus">
+                        <option value="{{this.status}}">{{this.status}}</option>
+                        {{/each}}
+
+                        {{#each statusOptions}}
+                        <option value="{{this}}">{{this}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+
+
+               
+
+
+                <input type="submit" value="UPDATE" class="btn btn-primary">
+
+            </form>
+
+
+            
+
+        </div>
+        {{/if}}
+</body>
+
+</html>

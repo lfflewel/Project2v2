@@ -94,7 +94,7 @@ let addPermission = false;
 let imHome = true;
 let todayDate = new Date().toLocaleString();
 let activeUserPhoto;
-let isMentee = false; 
+let isMentee = false;
 let isMentor = false;
 // let newUserPhoto;
 
@@ -113,7 +113,15 @@ let selectedUserId;
 let programName;
 let programDesc;
 let selectedPId;
+let isProgramListView = false;
+
+// milestone variable
+let milestoneName;
+let milestoneDesc;
 let selectedMId;
+
+// task variable
+let selectedTaskId;
 
 // notification emails
 let notifyTo;
@@ -162,16 +170,16 @@ app.post('/getStarted', function (req, res) {
 
 // create a company info
 app.post('/initCompany', function (req, res) {
-	companyName = req.body.companyName;
-	
-    let adminUserName = req.body.adminUserName;
-	adminFName = req.body.adminFName;
-	adminLName = req.body.adminLName;
-	adminJob = req.body.adminJob;
-	adminEmail = req.body.adminEmail;
-	adminPW = req.body.adminPW;
+    companyName = req.body.companyName;
 
-	pool.query(`SELECT * FROM User WHERE username = ?`, [adminUserName], function (err, results, fields) {
+    let adminUserName = req.body.adminUserName;
+    adminFName = req.body.adminFName;
+    adminLName = req.body.adminLName;
+    adminJob = req.body.adminJob;
+    adminEmail = req.body.adminEmail;
+    adminPW = req.body.adminPW;
+
+    pool.query(`SELECT * FROM User WHERE username = ?`, [adminUserName], function (err, results, fields) {
 
         if (results.length > 0) {
             console.log('UserName already exists');
@@ -236,11 +244,12 @@ app.post('/initCompany', function (req, res) {
     })
 });
 
+
 /*-------------------------------------END COMPANY SETUP-----------------------------------------*/
 
 
 /*----------------------------------------LOGIN ACCOUNT------------------------------------------*/
-app.post('/login', function(req, res) {
+app.post('/login', function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
 
@@ -248,7 +257,7 @@ app.post('/login', function(req, res) {
     console.log(`Username: ${username}`);
     console.log(`Password: ${password}`);
 
-     // if (useremail == valid && password == valid)
+    // if (useremail == valid && password == valid)
     if (username && password) {
 
         // call to db --> pass in the useremail && passwod as the parameters [] for the QUERY string below
@@ -283,35 +292,35 @@ app.post('/login', function(req, res) {
 
                 console.log(`User ID: ${activeUserId}`);
                 console.log(`User Role: ${activeUserRole}`);
-                
+
 
                 // Establish permission to add users and programs
                 imHome = true;
 
                 if (activeUserRole == "Admin" || activeUserRole == "Program Manager") {
                     addPermission = true;
-                    isMentee = false; 
+                    isMentee = false;
                     isMentor = false;
                 }
                 if (activeUserRole == "Mentee") {
                     addPermission = false;
-                    isMentee = true; 
+                    isMentee = true;
                     isMentor = false;
                 }
                 if (activeUserRole == "Mentor") {
                     addPermission = false;
-                    isMentee = false; 
+                    isMentee = false;
                     isMentor = true;
                 }
 
                 // res.redirect('/homepage');
-                res.render('homepage', {results, todayDate, companyName, companyLogo, activeUserFullName, addPermission, isMentee, isMentor, imHome })
+                res.render('homepage', { results, todayDate, companyName, companyLogo, activeUserFullName, addPermission, isMentee, isMentor, imHome })
             }
             else {
-                    res.redirect('/invalidLoginScreen');
+                res.redirect('/invalidLoginScreen');
             }
         })
-              
+
     } else {
         res.redirect('/invalidLoginScreen');
     }
@@ -333,14 +342,14 @@ app.get('/logout', function (req, res) {
 
 
 /*----------------------------------------HOMEPAGE(USER'S PROFILE)----------------------------------*/
-app.get('/homepage', function(req, res) {
+app.get('/homepage', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
+        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
 
             imHome = true;
-            res.render('homepage', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+            res.render('homepage', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
@@ -352,11 +361,11 @@ app.get('/homepage', function(req, res) {
 app.get('/addUser', function (req, res) {
     // newUserMessage = 'Please enter user information.';
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
+        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
 
-            res.render('addUser', {results, activeUserFullName, addPermission, roles, imHome, companyName, companyLogo, todayDate});
+            res.render('addUser', { results, activeUserFullName, addPermission, roles, imHome, companyName, companyLogo, todayDate });
         });
     }
 })
@@ -371,8 +380,16 @@ app.post('/createUser', function (req, res) {
     newUserPW = req.body.userPW;
     newUserRole = req.body.userRole;
     newUserJob = req.body.userJob;
-    newUserAbout= req.body.userAbout;
-    
+    newUserAbout = req.body.userAbout;
+
+    console.log(newUserUserName);
+    console.log(newUserFName);
+    console.log(newUserLName);
+    console.log(newUserEmail);
+    console.log(newUserPW);
+    console.log(newUserRole);
+    console.log(newUserJob);
+
 
     pool.query('SELECT * FROM User WHERE username = ?', [newUserUserName], function (err, results, fields) {
         if (err) throw err;
@@ -432,7 +449,10 @@ app.post('/createUser', function (req, res) {
     })
 })
 
+
 // update user photo from edituser page
+
+// TODO: I think we dont need it anymore since I did it in updateUser part below. I remembered I deleted this part....
 ///****IMPORTANT- NEED TO COME BACK TO THIS NEEDS TO KNOW IDENTIFY IF ACTIVEUSER OR SELECTED USER*/
 app.post('/updateProfilePhoto', function (req, res) {
     let uploadPath;
@@ -463,26 +483,27 @@ app.post('/updateProfilePhoto', function (req, res) {
 
 /*------------------------------------------EDIT USER----------------------------------------------*/
 // direct user to edituser page after gathering all user info
-app.get('/editUser', function(req, res) {
+app.get('/editUser', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function(err, results) {
+        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [activeUserId], function (err, results) {
             if (!err) {
-                console.log('results', results) 
+                console.log('results', results)
 
-                    // get list of Mentors for the roles dropdown 
-                    pool.query('SELECT * FROM User WHERE uRole = "Mentor"',  function (err, mentors) {
-                        if (!err);
-                        console.log(mentors);
+                // get list of Mentors for the roles dropdown 
+                pool.query('SELECT * FROM User WHERE uRole = "Mentor"', function (err, mentors) {
+                    if (!err);
+                    console.log(mentors);
 
-                        res.render('editUser', {results, mentors, isMentee, isMentor, addPermission, activeUserFullName, companyName, companyLogo, roles, todayDate});
-                    });            }
+                    res.render('editUser', { results, mentors, isMentee, isMentor, addPermission, activeUserFullName, companyName, companyLogo, roles, todayDate });
+                });
+            }
             else {
                 console.log(err)
-            }            
+            }
         });
     };
 });
-  
+
 // Update user based on data sent from edituser.hbs
 app.post('/updateUser', function (req, res) {
     if (req.session.loggedin) {
@@ -495,7 +516,7 @@ app.post('/updateUser', function (req, res) {
         let updateUserMentor = req.body.updateMentor;
         let updateUserId = req.body.updateId;
 
-     if (req.files) {
+        if (req.files) {
             updatePhoto = req.files.file;
         }
 
@@ -508,7 +529,7 @@ app.post('/updateUser', function (req, res) {
                 console.log("Update")
             });
         });
-      
+
 
 
         pool.query(`UPDATE User SET uFName=?, uLName=?, uPass=?, uRole=?, uJob=?, uAbout=?, mentorId=? WHERE uId = ? `, [updateUserFName, updateUserLName, updateUserPW, updateUserRole, updateUserJob, updateUserAbout, updateUserMentor, updateUserId], function (err, results) {
@@ -538,74 +559,74 @@ app.post('/updateUser', function (req, res) {
             };
 
         });
- 
-}
+
+    }
 });
 /*-------------------------------------------END EDIT USER---------------------------------------------*/
 
 /*----------------------------------------MY MENTOR / MY MENTEES / ALL USERS BUTTONS--------------------*/
-app.get('/myMentor', function(req, res) {
+app.get('/myMentor', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM User WHERE uId = ?`, [activeUserMentorId], function(err, results) {
+        pool.query(`SELECT * FROM User WHERE uId = ?`, [activeUserMentorId], function (err, results) {
             console.log(results);
             if (err) throw err;
-            
+
             imHome = false;
-            res.render('homepage', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+            res.render('homepage', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
 
 // take mentor to their list of mentees
-app.get('/myMentees', function(req, res) {
+app.get('/myMentees', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM User WHERE mentorId = ?`, [activeUserId], function(err, results) {
+        pool.query(`SELECT * FROM User WHERE mentorId = ?`, [activeUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
-   
+
             imHome = false;
-            res.render('userList', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+            res.render('userList', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
 
 // display list of users to be filtered on userList.hbs by permissions
-app.get('/userList', function(req, res) {
+app.get('/userList', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM User WHERE ucId = ?`, [companyId], function(err, results) {
+        pool.query(`SELECT * FROM User WHERE ucId = ?`, [companyId], function (err, results) {
             console.log(results);
             if (err) throw err;
-            
+
             console.log('addPermission: ', addPermission)
-            res.render('userList', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+            res.render('userList', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
 
 // view profile of a selected user on userList page, as a guest. Upon click of Veiw button user is taken to homepage but shown profile of person they are visiting
-app.post('/viewSelectedUser', function(req, res) {
+app.post('/viewSelectedUser', function (req, res) {
     if (req.session.loggedin) {
         selectedUserId = req.body.userId;
         console.log('selected user: ', selectedUserId);
-        pool.query(`SELECT * FROM User WHERE uId = ?`, [selectedUserId], function(err, results) {
+        pool.query(`SELECT * FROM User WHERE uId = ?`, [selectedUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
-            
+
             imHome = false;
-            res.render('homepage', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+            res.render('homepage', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
 
 // delete a user from the userList.hbs
-app.post('/deleteSelectedUser', function(req, res) {
+app.post('/deleteSelectedUser', function (req, res) {
     if (req.session.loggedin) {
         selectedUserId = req.body.userId;
         console.log('selected user: ', selectedUserId);
-        pool.query(`DELETE FROM User WHERE uId = ?`, [selectedUserId], function(err, results) {
+        pool.query(`DELETE FROM User WHERE uId = ?`, [selectedUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
-            
+
             // refresh page after deletion
             res.redirect('userList');
         });
@@ -613,7 +634,7 @@ app.post('/deleteSelectedUser', function(req, res) {
 });
 
 // view profile of a selected user, as a guest. Upon click of Veiw button user is taken to homepage but shown profile of person they are visiting
-app.post('/editSelectedUser', function(req, res) {
+app.post('/editSelectedUser', function (req, res) {
     if (req.session.loggedin) {
 
         // establish selected user
@@ -622,35 +643,44 @@ app.post('/editSelectedUser', function(req, res) {
         console.log('Selected User Id: ', selectedUserId);
 
         // get selected user's current info
-        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [selectedUserId], function(err, results) {
-            if (!err) { 
-                console.log('results', results) 
+        pool.query(`SELECT * FROM Company JOIN User ON Company.cId = User.ucId WHERE uId = ?`, [selectedUserId], function (err, results) {
+            if (!err) {
+                console.log('results', results)
 
                 imHome = false;
 
                 // need to see if user is a mentee
                 if (results[0].uRole == "Mentee") {
                     selectedUserIsMentee = true;
-                }else {
+                } else {
                     console.log("Not a Mentee");
                 }; // end if Mentee
 
                 // get list of Mentors for the roles dropdown - tried to add it to if, but mentors lost scope
-                pool.query('SELECT * FROM User WHERE uRole = "Mentor"',  function (err, mentors) {
+                pool.query('SELECT * FROM User WHERE uRole = "Mentor"', function (err, mentors) {
                     if (!err) {
-                        console.log('mentors: ',mentors);
-                        res.render('editUser', {results, mentors, isMentee, selectedUserIsMentee, isMentor, imHome, addPermission, activeUserFullName, companyName, companyLogo, roles, todayDate});
-                    } else 
-                    {
-                        console.log(err);                            }
-                    }); // end mentor query
+                        console.log('mentors: ', mentors);
+                        res.render('editUser', { results, mentors, isMentee, selectedUserIsMentee, isMentor, imHome, addPermission, activeUserFullName, companyName, companyLogo, roles, todayDate });
+                    } else {
+                        console.log(err);
+                    }
+                }); // end mentor query
             } else {
-                    console.log(err)};// No errors
+                console.log(err)
+            };// No errors
         }); // end outer Select query  
     }; // end if loggin 
 }); // end /editSelectedUser
 /*---------------------------------------END MY MENTOR / MY MENTEES / ALL USERS BUTTONS--------------------*/
 
+let isMilestoneListView = false;
+
+let isTaskListView = false;
+let isTaskStatusView = false;
+
+let pId;
+let mId;
+let tId;
 
 /*-------------------------------------------------PROGRAM LIST PAGE---------------------------------------*/
 
@@ -660,26 +690,254 @@ app.get('/programList', function (req, res) {
         pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function (err, results) {
             console.log(results);
             if (err) throw err;
-
-            res.render('programList', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
-        });
-    };
+            isProgramListView = true;
+            res.render('programList', { results, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+        })
+    }
 });
 
 
 // TODO: STILL NEED TO DO THIS PART. NOT SURE WHAT FUNCTION WE NEED FOR THIS
-app.post('/programsList', function (req, res) {
+// milestone view
+app.post('/viewSelectedProgram', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function (err, results) {
-            console.log(results);
-            if (err) throw err;
+        pId = req.body.pId;
 
+        pool.query(`SELECT * FROM Milestone WHERE mpId = ?`, [pId], function (err, milestones) {
+
+            if (err) throw err;
+            isProgramListView = false;
+            isMilestoneListView = true;
             // programList.hbs is not created yet. Create it once userList is perfected
-            res.render('programList', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+            res.render('programList', { milestones, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
 
+// task view
+app.post('/viewSelectedMilestone', function (req, res) {
+    if (req.session.loggedin) {
+        mId = req.body.mId;
+
+        pool.query('SELECT * FROM Tasks WHERE tmId = ?', [mId], function (err, tasks) {
+
+            if (err) throw err;
+
+            isProgramListView = false;
+            isTaskListView = true;
+            isMilestoneListView = false;
+            // programList.hbs is not created yet. Create it once userList is perfected
+            res.render('programList', { tasks, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+        });
+    };
+});
+
+// status view
+app.post('/viewSelectedTask', function (req, res) {
+    if (req.session.loggedin) {
+        tId = req.body.tId;
+        pool.query('SELECT * FROM Tasks as T JOIN UserMilestoneTask as UMT ON T.tId=UMT.utId WHERE T.tId = ?', [tId], function (err, status) {
+            isProgramListView = false;
+            isTaskListView = false;
+            isMilestoneListView = false;
+            isTaskStatusView = true;
+            res.render('programList', { status, isTaskStatusView, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+        })
+    }
+})
+
+
+// edit program
+app.post('/editSelectedProgram', function (req, res) {
+    if (req.session.loggedin) {
+        pId = req.body.pId;
+
+        pool.query(`SELECT * FROM Program WHERE pId=?`, [pId], function (err, programs) {
+            isProgramListView = true;
+
+            res.render('editList', { programs, isProgramListView, activeUserFullName, companyName, companyLogo, todayDate });
+
+        })
+    }
+});
+
+app.post('/updateProgram', function (req, res) {
+    if (req.session.loggedin) {
+        let updatePN = req.body.updatePN;
+        let updatePD = req.body.updatePD;
+
+        pool.query(`UPDATE Program SET pName=?, pDesc=? WHERE pId=?`, [updatePN, updatePD, pId], function (err, results) {
+            console.log("UPDATE")
+            pool.query(`SELECT * FROM Program WHERE pId=?`, [pId], function (err, programs) {
+                isProgramListView = true;
+                res.render('editList', { programs, isProgramListView, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
+            })
+        })
+    }
+})
+
+// edit milestone
+app.post('/editSelectedMilestone', function (req, res) {
+    if (req.session.loggedin) {
+        mId = req.body.mId;
+
+        pool.query(`SELECT * FROM Milestone WHERE mId=?`, [mId], function (err, milestones) {
+            isProgramListView = false;
+            isMilestoneListView = true;
+
+            res.render('editList', { milestones, isProgramListView, isMilestoneListView, activeUserFullName, companyName, companyLogo, todayDate });
+
+        })
+    }
+});
+
+app.post('/updateMilestone', function (req, res) {
+    if (req.session.loggedin) {
+        let updateMN = req.body.updateMN;
+        let updateMD = req.body.updateMD;
+
+        pool.query(`UPDATE Milestone SET mName=?, mDesc=? WHERE mId=?`, [updateMN, updateMD, mId], function (err, results) {
+            console.log("UPDATE")
+            pool.query(`SELECT * FROM Milestone WHERE mId=?`, [mId], function (err, milestones) {
+                isProgramListView = false;
+                isMilestoneListView = true;
+                res.render('editList', { milestones, isProgramListView, isMilestoneListView, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
+            })
+        })
+    }
+})
+
+// edit task
+app.post('/editSelectedTask', function (req, res) {
+    if (req.session.loggedin) {
+        tId = req.body.tId;
+
+        pool.query(`SELECT * FROM Tasks WHERE tId=?`, [tId], function (err, tasks) {
+            isProgramListView = false;
+            isTaskListView = true;
+            isMilestoneListView = false;
+
+            res.render('editList', { tasks, isProgramListView, isMilestoneListView, isTaskListView, activeUserFullName, companyName, companyLogo, todayDate });
+
+        })
+    }
+});
+
+
+let updateFile;
+let taskId;
+
+app.post('/updateTask', function (req, res) {
+    if (req.session.loggedin) {
+        let updateTN = req.body.updateTN;
+        let updateTD = req.body.updateTD;
+        let updateTT = req.body.updateTT;
+
+
+        if (req.files) {
+            updateFile = req.files.file;
+        }
+
+        let uploadPath;
+        uploadPath = __dirname + '/public/upload/companyFile/' + updateFile.name;
+
+        // user mv(to place file on the server)
+        updateFile.mv(uploadPath, function (err) {
+            if (err) return res.status(500).send(err);
+            pool.query(`UPDATE Tasks SET tFile=? WHERE tId=?`, [updateFile.name, tId], function (err, results) {
+                console.log("UPDATE")
+            })
+        })
+
+        pool.query(`UPDATE Tasks SET tName=?, tDesc=?, tText=? WHERE tId=?`, [updateTN, updateTD, updateTT, tId], function (err, results) {
+            pool.query(`SELECT * FROM Tasks WHERE tId=?`, [tId], function (err, tasks) {
+                isProgramListView = false;
+                isTaskListView = true;
+                isMilestoneListView = false;
+
+                res.render('editList', { tasks, isProgramListView, isMilestoneListView, isTaskListView, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
+            })
+
+        })
+    }
+
+})
+let tId1;
+
+// edit status
+app.post('/editTaskStatus', function (req, res) {
+    if (req.session.loggedin) {
+        tId1 = req.body.tId1;
+        console.log(`Task3: ${tId1}`)
+
+
+        pool.query('SELECT * FROM Tasks as T JOIN UserMilestoneTask as UMT ON T.tId=UMT.utId WHERE T.tId = ?', [tId1], function (err, status) {
+            isProgramListView = false;
+            isTaskListView = false;
+            isMilestoneListView = false;
+            isTaskStatusView = true;
+            res.render('editList', { status, statusOptions, isTaskStatusView, isProgramListView, isMilestoneListView, isTaskListView, activeUserFullName, companyName, companyLogo, todayDate });
+
+        })
+    }
+});
+
+app.post('/updateTaskStatus', function (req, res) {
+    if (req.session.loggedin) {
+
+        console.log(`Task: ${tId1}`)
+
+        let updateTN1 = req.body.updateTN1;
+        let updateStatus = req.body.updateStatus;
+
+
+        pool.query(`UPDATE Tasks SET tName=? WHERE tId=?`, [updateTN1, tId1], function (err, results) {
+
+            if (!err) {
+                console.log(`Task1: ${tId1}`)
+
+                console.log("UPDATE")
+                pool.query(`UPDATE UserMilestoneTask SET status=? WHERE utId=?`, [updateStatus, tId1], function (err, results) {
+                    if (!err) {
+                        pool.query('SELECT * FROM Tasks as T JOIN UserMilestoneTask as UMT ON T.tId=UMT.utId WHERE T.tId = ?', [tId], function (err, status) {
+                            if (!err) {
+                                res.render('editList', { status, statusOptions, isTaskStatusView, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
+                            }
+                            else {
+                                console.log(err)
+                            }
+
+                        })
+                    }
+                    else {
+                        console.log(err)
+                    }
+                })
+            }
+
+
+            //     if (!err) {
+            //         console.log(`Task2: ${tId1}`)
+            //         console.log("UPDATE")
+            //         pool.query('SELECT * FROM Tasks as T JOIN UserMilestoneTask as UMT ON T.tId=UMT.utId WHERE T.tId = ?', [tId], function (err, status) {
+            //             if (!err) {
+            //                 res.render('editList', { status, statusOptions, isTaskStatusView, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
+            //             }
+            //             else {
+            //                 console.log(err)
+            //             }
+
+            //         })
+            //     }
+            //     else {
+            //         console.log(err)
+            //     }
+            // })
+
+    })
+}
+
+})
 
 
 /*--------------------------------------------------END PROGRAM LIST PAGE---------------------------------------*/
@@ -694,7 +952,7 @@ app.post('/programsList', function (req, res) {
 app.get('/newProgram', function (req, res) {
     if (req.session.loggedin) {
         pool.query('SELECT * FROM Program JOIN Company ON Program.pcId = Company.cId WHERE cId=?', [companyId], function (err, results) {
-            
+
             if (err) throw err;
             res.render('newProgram', { results, activeUserFullName, programName, companyName, companyLogo, todayDate });
         })
@@ -707,26 +965,26 @@ app.post('/newProgram', function (req, res) {
         programName = req.body.programName;
         programDesc = req.body.programDesc;
 
-        pool.query(`INSERT INTO Program (pName, pDesc, cId) VALUES ("${programName}", "${programDesc}", ${companyId})`, function (err, results) {
+        pool.query(`INSERT INTO Program (pName, pDesc, pcId) VALUES ("${programName}", "${programDesc}", ${companyId})`, function (err, results) {
             if (err) {
                 console.log(err);
             }
             else {
                 console.log("Program Inserted");
                 activeProgramId = results.insertId;
-                res.redirect('/addMilestone');
+                res.redirect('/newProgram');
             }
         })
     }
 });
 
 // choose program and direct to description 
-app.post('/getProgram', function(req,res) {
-    
+app.post('/getProgram', function (req, res) {
+
     if (req.session.loggedin) {
 
         let selectedProgram = req.body.selectedProgram;
-        
+
         console.log(`Selected Program:`, selectedProgram);
 
         pool.query(`SELECT pId FROM Program WHERE pName=?`, [selectedProgram], function (err, results) {
@@ -734,13 +992,13 @@ app.post('/getProgram', function(req,res) {
                 res.render('/newProgram');
             }
             else {
-               
-                
+
+
                 selectedPId = results[0].pId;
                 // console.log(results)
                 console.log(`Selected Program Id: ${selectedPId}`);
                 res.redirect('/addMilestone')
-               
+
             }
         })
     }
@@ -750,78 +1008,124 @@ app.post('/getProgram', function(req,res) {
 
 // /*----------------------------ADD MILESTONE FOR PROGRAM ------------------------------------------*/
 
-// // dispplay milestone page
+// dispplay milestone page
 app.get('/addMilestone', function (req, res) {
     if (req.session.loggedin) {
-        pool.query('SELECT mName FROM Milestone WHERE mpId=?', [selectedPId], function (err, results) {
-            
+        console.log(companyId);
+        console.log(selectedPId);
+        pool.query('SELECT * FROM Milestone as M JOIN Program as P JOIN Tasks as T ON P.pId=mpId AND T.tmId=M.mId WHERE pcId=? and mpId=?', [companyId, selectedPId], function (err, milestones) {
             if (err) throw err;
-            res.render('addMilestone', { results, activeUserFullName, companyName, companyLogo, todayDate });
+
+            res.render('addMilestone', { milestones, companyId, activeUserFullName, companyName, companyLogo, todayDate });
         })
     };
-});
+})
 
 
-// create new milestone
+// create new milestone + task 
 app.post('/newMilestone', function (req, res) {
     if (req.session.loggedin) {
-        let milestoneName = req.body.milestoneName;
-        let milestoneDesc = req.body.milestoneDesc;
-        let milestoneOrd  = req.body.milestoneOrd;  
+        milestoneName = req.body.milestoneName;
+        milestoneDesc = req.body.milestoneDesc;
+        let milestoneOrd = req.body.milestoneOrd;
+
+        let taskName = req.body.taskName;
+        let taskDesc = req.body.taskDesc;
+        let taskText = req.body.taskText;
+
+
+
 
         pool.query(`INSERT INTO Milestone (mName, mDesc, mOrdinal, mpId) VALUES ("${milestoneName}", "${milestoneDesc}", "${milestoneOrd}", ${selectedPId})`, function (err, results) {
             if (err) {
-                console.log(err);
-            }
-            else {
-                // insert id 
-
-                console.log("Milestone Inserted");
-               
+                console.log(err)
                 res.redirect('/addMilestone');
             }
-        })
-    }
-});
 
-app.post('/getMilestone', function(req,res) {
-    
-    if (req.session.loggedin) {
-
-        let selectedMilestone = req.body.selectedMilestone;
-        
-        console.log(`Selected Milestone:`, selectedMilestone);
-
-        pool.query(`SELECT mId FROM Milestone WHERE mName=? and mpId=?`, [selectedMilestone, selectedPId], function (err, results) {
-            if (err) {
-                res.render('/addMilestone');
-            }
             else {
-               
-                
-                selectedMId = results[0].mId;
-                // console.log(results)
-                console.log(`Selected Milestone Id: ${selectedMId}`);
-                res.redirect('/addTask')
-               
+                let mId = results.insertId;
+
+                if (!req.files || Object.keys(req.files).length === 0) {
+                    pool.query(`INSERT INTO Tasks (tName, tDesc, tText, tmId) VALUES ("${taskName}", "${taskDesc}", "${taskText}", ${mId})`, function (err, results) {
+                        if (err) throw err;
+                        console.log("Add Task w/out File")
+                        pool.query('SELECT * FROM Milestone as M JOIN Program as P JOIN Tasks as T ON P.pId=mpId AND T.tmId=M.mId WHERE pcId=? and mpId=?', [companyId, selectedPId], function (err, milestones) {
+                            if (err) throw err;
+                            res.render('addMilestone', { milestones, activeUserFullName, companyName, companyLogo, todayDate, alert: 'M + T added w/out file successfully.' });
+
+                        })
+                    })
+                }
+                else {
+                    let textFile;
+                    let uploadPath;
+
+                    // Handle File Upload
+
+                    textFile = req.files.file;
+                    uploadPath = __dirname + '/public/upload/companyFile/' + textFile.name;
+                    console.log(textFile);
+                    console.log(textFile.name);
+                    // user mv(to place file on the server)
+                    textFile.mv(uploadPath, function (err) {
+                        if (err) return res.status(500).send(err);
+                        //save data into the database
+                        pool.query(`INSERT INTO Tasks (tName, tDesc, tText, tFile, tmId) VALUES ("${taskName}", "${taskDesc}", "${taskText}","${textFile.name}", ${mId})`, function (err, results) {
+                            if (err) throw err;
+
+                            console.log("Add Task with File")
+                            pool.query('SELECT * FROM Milestone as M JOIN Program as P JOIN Tasks as T ON P.pId=mpId AND T.tmId=M.mId WHERE pcId=? and mpId=?', [companyId, selectedPId], function (err, milestones) {
+                                if (err) throw err;
+
+                                res.render('addMilestone', { milestones, activeUserFullName, companyName, companyLogo, todayDate, alert: 'M + T added with file successfully.' });
+                            })
+
+                        })
+                    })
+                }
             }
         })
     }
 })
 
+// /* -- ----------------------CREATE A TASK------------------------------------------- */
 
-/* -- ----------------------CREATE A TASK------------------------------------------- */
 
+// // display program page
+// app.get('/addTask', function (req, res) {
+//     if (req.session.loggedin) {
 
-// display program page
-app.get('/addTask', function (req, res) {
+//         pool.query('SELECT mName FROM Milestone WHERE pcId=?', [companyId], function (err, programs) {
+//             if (err) throw err;
+//             console.log(programs)
+//             res.render('addTask', { programs, activeUserFullName, programName, companyName, companyLogo, todayDate });
+//         })
+//     };
+// });
+
+app.post('/viewMilestone', function (req, res) {
     if (req.session.loggedin) {
-        pool.query('SELECT * FROM Tasks WHERE tmId=?', [selectedMId], function (err, results) {
-            if (err) throw err;
-            res.render('addTask', { results, activeUserFullName, companyName, companyLogo, todayDate });
+        selectedMId = req.body.milestoneId;
+        console.log(`Selected MID: ${selectedMId}`)
+        pool.query('SELECT * FROM Tasks WHERE tmId = ?', [selectedMId], function (err, tasks) {
+            selectedTaskId = tasks[0].tId;
+            console.log(`Testing: ${selectedTaskId}`)
+            res.render('addTask', { tasks, companyId, activeUserFullName, companyName, companyLogo, todayDate });
         })
-    };
-});
+    }
+})
+
+
+// display Task page
+app.get('/newTask', function (req, res) {
+    if (req.session.loggedin) {
+        pool.query('SELECT * FROM Tasks WHERE tmId = ?', [selectedMId], function (err, tasks) {
+            if (err) throw err;
+            res.render('addTask', { tasks, companyId, activeUserFullName, companyName, companyLogo, todayDate });
+        })
+    }
+})
+
 
 // create a new program
 app.post('/newTask', function (req, res) {
@@ -829,15 +1133,19 @@ app.post('/newTask', function (req, res) {
         let taskName = req.body.taskName;
         let taskDesc = req.body.taskDesc;
         let taskText = req.body.taskText;
-       
 
-         // let user create task w/out file 
+
+        // let user create task w/out file 
         if (!req.files || Object.keys(req.files).length === 0) {
             pool.query(`INSERT INTO Tasks (tName, tDesc, tText, tmId) VALUES ("${taskName}", "${taskDesc}", "${taskText}", ${selectedMId})`, function (err, results) {
                 if (err) throw err;
 
                 console.log("Task Inserted Without File");
-                res.redirect('/addTask');
+                console.log(`Testing: ${selectedTaskId}`)
+                pool.query('SELECT * FROM Tasks WHERE tmId = ?', [selectedMId], function (err, tasks) {
+                    if (err) throw err;
+                    res.render('addTask', { tasks, companyId, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Added successfully.' });
+                })
             })
         }
         // let user create task with file 
@@ -852,37 +1160,45 @@ app.post('/newTask', function (req, res) {
                 pool.query(`INSERT INTO Tasks (tName, tDesc, tText, tFile, tmId) VALUES ("${taskName}", "${taskDesc}", "${taskText}","${textFile.name}", ${selectedMId})`, function (err, results) {
                     if (err) throw err;
                     console.log("Task Inserted with File");
-                    res.redirect('/addTask');
-                })
-            });
+                    pool.query('SELECT * FROM Tasks WHERE tmId = ?', [selectedMId], function (err, tasks) {
+                        if (err) throw err;
+                        res.render('addTask', { tasks, companyId, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Added successfully.' });
 
+                    })
+                });
+
+            })
         }
     }
 });
 
 
+
 // /*----------------------------END CREATE TASK ------------------------------------------*/
 
-
+let pName;
 /*------------------------------------------- myProgram PAGE---------------------------------------*/
 
 // display Properties of program 
 app.get('/myProgram', function (req, res) {
     if (req.session.loggedin) {  // NOT CORRECT
-        
+
         // determine if we are looking at active user or selected user pass value to global var
-        if(!imHome){
+        if (!imHome) {
             thisUserId = selectedUserId;
         }
-        else thisUserId = activeUserId;
+        else {
+            thisUserId = activeUserId;
+        }
 
         // get user's program, milestone and task info
-        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ?`, [thisUserId], function (err, results) {
+        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId WHERE uId = ?`, [thisUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
 
-            console.log(results);
-            res.render('myProgram', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+            pName = results[0].pName;
+            pDesc = results[0].pDesc;
+            res.render('myProgram', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, pName, pDesc });
         });
     };
 });
@@ -890,20 +1206,22 @@ app.get('/myProgram', function (req, res) {
 app.post('/viewSelectedMilestone', function (req, res) {
     if (req.session.loggedin) {  // NOT CORRECT
         thisMilestoneId = req.body.mId;
-        thisMilestoneName;
+        thisMilestoneName
 
-        console.log('/ViewSelected Milestone...thisUserId: ', thisUserId, ' selectedMilestone: ', thisMilestoneId);
 
-        pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ? and mId = ?`, [thisUserId, thisMilestoneId], function (err, results) {
+
+        console.log(`selectedMilestone: ${thisMilestoneId}`);
+        console.log()
+        pool.query('SELECT * FROM Milestone as M JOIN Tasks as T ON M.mId=T.tmId WHERE T.tmId = ?', [thisMilestoneId], function (err, results) {
             console.log(results);
             if (err) throw err;
 
             // Get milestone and user name and pass it to global var
             thisMilestoneName = results[0].mName;
-            thisUserFullName = results[0].uFName + ' ' + results[0].uLName;
+            // thisUserFullName = results[0].uFName + ' ' + results[0].uLName;
 
             console.log(results);
-            res.render('myProgMilestone', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+            res.render('myProgMilestone', { results, mName, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, pName, pDesc });
         });
     };
 });
@@ -912,14 +1230,14 @@ app.post('/viewSelectedMilestone', function (req, res) {
 app.post('/viewSelectedMileTask', function (req, res) {
     if (req.session.loggedin) {  // NOT CORRECT
         thisTaskId = req.body.tId;
- 
+
         pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ? and tId = ?`, [thisUserId, thisTaskId], function (err, results) {
-             if (err) throw err;
+            if (err) throw err;
             // Get Task name and pass it to global var
             thisTaskName = results[0].tName
- 
+
             console.log(results);
-            res.render('myMileTask', {results, statusOptions, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+            res.render('myMileTask', { results, statusOptions, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
@@ -928,13 +1246,13 @@ app.post('/viewSelectedMileTask', function (req, res) {
 // TODO: STILL NEED TO DO THIS PART. NOT SURE WHAT FUNCTION WE NEED FOR THIS
 app.post('/updateMyTaskStatus', function (req, res) {
     if (req.session.loggedin) {
-       let thisTaskStatus = req.body.taskStatus;
+        let thisTaskStatus = req.body.taskStatus;
         // Select element on orm will only display if imHome
         pool.query('UPDATE UserMilestoneTask SET status = ? WHERE uuId = ? and umId = ? and utId = ?', [thisTaskStatus, thisUserId, thisMilestoneId, thisTaskId], function (err, results) {
             console.log
             if (err) throw err;
 
- 
+
             // Update successfull, render updated program
             pool.query(`SELECT * FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE uId = ?`, [thisUserId], function (err, results) {
                 console.log(results);
@@ -961,13 +1279,13 @@ app.post('/updateMyTaskStatus', function (req, res) {
 
                 }); // End get mentor's email
 
-              
+
                 // programList.hbs is not created yet. Create it once userList is perfected
                 res.render('myProgram', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
             });
 
         });
-     };
+    };
 });
 
 /*-------------------------------------------END myProgram PAGE---------------------------------------*/
@@ -976,24 +1294,24 @@ app.post('/updateMyTaskStatus', function (req, res) {
 
 /* -------------------------------EMAILING----------------------------------------------- */
 
-app.get('/emailMyMentees', function(req, res) {
+app.get('/emailMyMentees', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM User WHERE mentorId = ?`, [activeUserId], function(err, results) {
+        pool.query(`SELECT * FROM User WHERE mentorId = ?`, [activeUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
 
-            res.render('emailForm', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+            res.render('emailForm', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
 
-app.get('/emailMyMentor', function(req, res) {
+app.get('/emailMyMentor', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM User WHERE uId = ?`, [activeUserMentorId], function(err, results) {
+        pool.query(`SELECT * FROM User WHERE uId = ?`, [activeUserMentorId], function (err, results) {
             console.log(results);
             if (err) throw err;
 
-            res.render('emailForm', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+            res.render('emailForm', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
 });
@@ -1004,7 +1322,7 @@ app.get('/emailAll', function (req, res) {
         pool.query('SELECT * FROM User Join Company on ucId = cId WHERE cId=?', [companyId], function (err, results) {
             if (err) throw err;
 
-            res.render('emailForm', {results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate});
+            res.render('emailForm', { results, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         })
     };
 });
@@ -1034,8 +1352,8 @@ app.post('/send', (req, res) => {
             user: from,
             pass: 'M1 password!'
         },
-        tls:{
-            rejectUnauthorized:false
+        tls: {
+            rejectUnauthorized: false
         }
     });
 
@@ -1050,20 +1368,20 @@ app.post('/send', (req, res) => {
 
     // send mail with defined transport object
     transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                return console.log(error);
-            }
-            console.log('Message sent: %s', info.messageId);   
-            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 
-            res.render('contact', {activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, msg:('Email has been sent')});
-        });
+        res.render('contact', { activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, msg: ('Email has been sent') });
+    });
 });
 
 // This function is call throughout to send notification emails from the system email
 function notify() {
     // system email  
-    let from = "Email.GroupSix@gmail.com"; 
+    let from = "Email.GroupSix@gmail.com";
 
     const output = `
     <p>${notifySubject}</p>
@@ -1080,8 +1398,8 @@ function notify() {
             user: from,
             pass: 'M1 password!'
         },
-        tls:{
-            rejectUnauthorized:false
+        tls: {
+            rejectUnauthorized: false
         }
     });
 
@@ -1096,14 +1414,14 @@ function notify() {
 
     // send mail with defined transport object
     transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                return console.log(error);
-            }
-            console.log('Message sent: %s', info.messageId);   
-            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-            console.log(mailOptions);
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+        console.log(mailOptions);
 
-            return({msg:('Email has been sent')});
+        return ({ msg: ('Email has been sent') });
     });
 };
 
@@ -1128,7 +1446,7 @@ app.get('/assignUser', function (req, res) {
                 });
             });
         });
-    };   
+    };
 });
 
 
@@ -1167,14 +1485,14 @@ app.post('/assignUser', function (req, res) {
                         console.log("Update Mentor")
                         pool.query('UPDATE User SET upId=?, mentorId=? WHERE uId = ?', [selectedPId, mentorUId, menteeUId], function (err, results) {
                             if (err) throw err;
-                            
+
                             console.log("Update Mentee");
 
                             // Add user's milestone and tasks to the associate table UserMilestoneTask
                             pool.query('SELECT uId, mId, tId FROM User JOIN Program ON upId = pId JOIN Milestone on mpId = pId JOIN Tasks on tmId = mId WHERE pId = ? and uId = ? and uRole = "Mentee"', [selectedPId, menteeUId], function (err, bridgeRes) {
                                 if (err) throw err;
 
-                                for (var i = 0; i < bridgeRes.length; i++) { 
+                                for (var i = 0; i < bridgeRes.length; i++) {
 
                                     let uId = bridgeRes[i].uId;
                                     let mId = bridgeRes[i].mId;
@@ -1188,15 +1506,15 @@ app.post('/assignUser', function (req, res) {
                                     });
                                 }
                                 console.log(bridgeRes.length);
-                            });                   
-    
+                            });
+
                             // end test
 
                             res.redirect('/assignUser')
                         });
                     })
                 }
-          })
+            })
         }
     })
 })

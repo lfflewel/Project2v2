@@ -203,106 +203,155 @@
 
     .taskListContainer {
         margin-top: 20px;
-    
+
     }
-    div.form-group{
+
+    div.form-group {
         margin-top: 20px;
     }
-    
+
+    #createNewTask {
+        display: none;
+        flex-direction: column;
+
+    }
+
+    #createNewTask button {
+        border: 0;
+        padding: 10px;
+        background-color: #171717;
+        color: #FFFFFF;
+        border-radius: 10px;
+        margin: 20px 70px 0 70px;
+    }
+
+    #createNewTask button:hover {
+        cursor: pointer;
+        background-color: #573d6a;
+    }
 </style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
 
 
 
 <body>
-    <h5>{{companyName}}</h5>
+    <div>
+        <h5>{{companyName}}</h5>
 
-    {{#if companyLogo}}
-    <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
-    {{else}}
-    <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
-    {{/if}}
+        {{#if companyLogo}}
+        <img class="logo_image" src="/public/upload/companyLogo/{{companyLogo}}" alt="User Profile">
+        {{else}}
+        <img class="logo_image" src="/public/upload/companyLogo/defaultimage.png" alt="User Profile">
+        {{/if}}
 
 
-    <p><b>You are log in as {{activeUserFullName}}.</b></p>
+        <p><b>You are log in as {{activeUserFullName}}.</b></p>
 
-    <div id="navigation">
-        <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
-            <img src="/img/homeIcon.png">
-            <span>HOME</span>
-        </button>
-        <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
-            <img src="/img/addprogram.png">
-            <span>Add Program</span>
-        </button>
-        <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
-            <img src="/img/logOutIcon.png">
-            <span>LOG OUT</span>
-        </button>
+        <div id="navigation">
+            <button type="button" class="navigation-buttons" onclick="location.href = '/homepage'">
+                <img src="/img/homeIcon.png">
+                <span>HOME</span>
+            </button>
+            <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
+                <img src="/img/addprogram.png">
+                <span>Add Program</span>
+            </button>
+            <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
+                <img src="/img/logOutIcon.png">
+                <span>LOG OUT</span>
+            </button>
+        </div>
+
+   
+            {{#if alert}}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{alert}}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {{/if}}
+
+            <button class="button" value="add" id="show_task_box" onclick="showTaskBox()">Add More Task</button>
+
+
+            <div class="body-container">
+                <div id="createNewTask">
+                    <form action="/newTask" method="POST" enctype="multipart/form-data">
+
+                        <input type="text" id="tnInput" class="form-control" name="taskName" placeholder="Task Name">
+
+
+                        <input type="text" id="tdInput" class="form-control" name="taskDesc"
+                            placeholder="Task Description">
+
+
+                        <input type="text" id="ttInput" class="form-control" name="taskText" placeholder="Task Text">
+
+                        <div class="form-group">
+                            <label style="font-weight: bold;" for="exampleFormControlFile1">Upload File</label>
+                            <input type="file" id="tfInput" class="form-control-file" name="file"
+                                id="exampleFormControlFile1">
+                        </div>
+
+
+                        <button type="submit" value="Create">Create Task</button>
+
+                    </form>
+                    <button id="close_task_box" onclick="closeTaskBox()">Close</button>
+                </div>
+
+
+                <div id="taskListContainer">
+
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+
+                                <th scope="col">Task Name</th>
+                                <th scope="col">Task Description</th>
+                                <th scope="col">Task Text</th>
+                                <th scope="col">Task File</th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {{#each tasks}}
+                            <tr>
+                                <td>{{tName}}</td>
+                                <td>{{tDesc}}</td>
+                                <td>{{tText}}</td>
+                                {{!-- allow user to download a file --}}
+                                <td><a href="/public/upload/companyFile/{{tFile}}" download="{{tFile}}">{{tFile}}</a>
+                                </td>
+
+                                {{/each}}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+
     </div>
+    
+            <script>
+                function showTaskBox() {
+                    document.getElementById("createNewTask").style.display = "flex";
+                    document.getElementById("taskListContainer").style.display = "none";
+                }
 
-    <main>
-
-        <div class="body-container">
-            <h1>Task Creator</h1>
-            <p>To create a Milestone, fill in the field below and click the create task button</p>
-
-            <form action="/newTask" method="POST" enctype="multipart/form-data">
-                <div class="form-row">
-                    <div class="col">
-                        <input type="text" class="form-control" name="taskName" placeholder="Task Name" required>
-                    </div>
-                    <div class="col">
-                        <input type="text" class="form-control" name="taskDesc" placeholder="Task Description" required>
-                    </div>
-                    <div class="col">
-                        <input type="text" class="form-control" name="taskText" placeholder="Task Text" required>
-                    </div>
-                    <div class="form-group">
-                        <label style="font-weight: bold;" for="exampleFormControlFile1">Upload File</label>
-                        <input type="file" class="form-control-file" name="file" id="exampleFormControlFile1">
-                    </div>
-
-                    <div class="button">
-                        <button type="submit" name="createTask">Create Task</button>
-                    </div>
-            </form>
-        </div>
-
-        <div class="taskListContainer">
-
-
-
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">Task Name</th>
-                        <th scope="col">Task Description</th>
-                        <th scope="col">Task Text</th>
-                        <th scope="col">Task File</th>
-
-                    </tr>
-                </thead>
-                
-                <tbody>
-                {{#each results}}
-                    <tr>
-                        <td>{{this.tName}}</td>
-                        <td>{{this.tDesc}}</td>
-                        <td>{{this.tText}}</td>
-                        {{!-- allow user to download a file  --}}
-                        <td><a href="/public/upload/companyFile/{{this.tFile}}" download="{{this.tFile}}">{{this.tFile}}</a></td>
-                         {{/each}}
-                    </tr>
-                </tbody>
-            </table>
-           
-
-        </div>
-
-
+                function closeTaskBox() {
+                    document.getElementById("tnInput").value = '';
+                    document.getElementById("tdInput").value = '';
+                    document.getElementById("ttInput").value = '';
+                    document.getElementById("tfInput").value = '';
+                    document.getElementById("createNewTask").style.display = "none";
+                    document.getElementById("taskListContainer").style.display = "flex";
+                };
+            </script>
 </body>
 
 </html>

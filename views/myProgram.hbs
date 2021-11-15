@@ -62,34 +62,34 @@
             </button>
         </div>
 
-        {{#each results}}
-        <p>{{this.pName}}</p>
-        <p>{{this.pDesc}}</p>
-        {{/each}}
+        <h3 style="text-align: center;">Program: {{pName}}</h3>
+        <br><br>
+    
 
         <table class="table table-bordered">
-            <p>Milestones</p>
+          
             <tbody>
                 <thead>
                     <tr>
                         <th scope="col">Milestone Id</th>
-                        <th scope="col">Milestone Ordinal</th>
                         <th scope="col">Milestone Name</th>
                         <th scope="col">Milestone Description</th>
+                        <th scope="col">Milestone Ordinal</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
                 {{#each results}}
                 <tr>
                     <td>{{this.mId}}</td>
-                    <td>{{this.mOrdinal}}</td>
                     <td>{{this.mName}}</td>
                     <td>{{this.mDesc}}</td>
+                    <td>{{this.mOrdinal}}</td>
                     <td>
                         <form method="POST" action="/viewSelectedMilestone">
                             <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
                             <input name="mId" type="hidden" value="{{this.mId}}"></input>
                         </form>
+                        
                     </td>
                 </tr>
                 {{/each}}

@@ -205,7 +205,7 @@
 
     .milestoneListContainer {
         margin-top: 20px;
-        
+
     }
 </style>
 
@@ -242,13 +242,22 @@
     </div>
 
     <main>
+        {{#if alert}}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{alert}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {{/if}}
+
+
         <button type="button" onclick="location.href = '/assignUser'">Assign User</button>
+
         <div class="body-container">
             <h1>Milestone Creator</h1>
             <p>To create a Milestone, type the Milestone name in the field below and click the create milestone button
             </p>
             <p>Once you create the Milestone, you will be prompted to create tasks for each milestone created</p>
-            <form action="/newMilestone" method="POST">
+            <form action="/newMilestone" method="POST" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="col">
                         <input type="text" class="form-control" name="milestoneName" placeholder="Milestone Name"
@@ -263,29 +272,62 @@
                             required>
                     </div>
 
+                    <div class="col">
+                        <input type="text" class="form-control" name="taskName" placeholder="Task Name" required>
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="taskDesc" placeholder="Task Description" required>
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" name="taskText" placeholder="Task Text" required>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight: bold;" for="exampleFormControlFile1">Upload File</label>
+                        <input type="file" class="form-control-file" name="file" id="exampleFormControlFile1">
+                    </div>
+
                     <div class="button">
-                        <button type="submit" name="createprogram">Create Milestone</button>
+                        <button type="submit" name="createprogram">Create </button>
                     </div>
             </form>
         </div>
 
-        <div class="milestoneListContainer">
-            {{#each results}}
+        <div class="listContainer">
 
-            <form action="/a" method="POST">
-                <input type="hidden" name="selectedMilestone" value="{{this.mName}}">
-                <button class="btn btn-primary" id="selectedMilestone" type="submit" formaction="/getMilestone">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Milestone Name</th>
+                        <th scope="col">Milestone Description</th>
+                        <th scope="col">Milestone Ordinal</th>
+                        <th scope="col">Task Name</th>
+                        <th scope="col">Task Description</th>
+                        <th scope="col">Task Text</th>
+                        <th scope="col">Task File</th>
+                        <th scope="col" class="text-end">Action</th>
+                    </tr>
+                </thead>
 
-                    <i class="bi bi-folder2-open " style="font-size:70px;"></i>
-
-                    <h3>{{this.mName}}</h3>
-
-                </button>
-            </form>
-
-            {{/each}}
-
-        </div>
+                <tbody>
+                    {{#each milestones}}
+                    <tr>
+                        <td>{{mName}}</td>
+                        <td>{{mDesc}}</td>
+                        <td>{{mOrdinal}}</td>
+                        <td>{{tName}}</td>
+                        <td>{{tDesc}}</td>
+                        <td>{{tText}}</td>
+                        {{!-- allow user to download a file --}}
+                        <td><a href="/public/upload/companyFile/{{tFile}}" download="{{tFile}}">{{tFile}}</a></td>
+                        <td class="text-end">
+                            <form method="POST" action="/viewMilestone">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
+                                <input name="milestoneId" type="hidden" value="{{this.mId}}"></input>
+                            </form>
+                    {{/each}}
+                    </tr>
+                </tbody>
+            </table>
 
 
 

@@ -62,24 +62,171 @@
             </button>
         </div>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Program Id</th>
-                    <th scope="col">Program Name</th>
-                    <th scope="col">Program Description</th>
-                </tr>
-            </thead>
 
-            {{#each results}}
-            <tbody>
-                <tr>
-                    <td>{{this.pId}}</td>
-                    <td>{{this.pName}}</td>
-                    <td>{{this.pDesc}}</td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
+        <div>
+            {{#if isProgramListView}}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Program Id</th>
+                        <th scope="col">Program Name</th>
+                        <th scope="col">Program Description</th>
+                        <th scope="col" class="text-end">Action</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+                    <tr>
+                        {{#each results}}
+                        <td>{{this.pId}}</td>
+                        <td>{{this.pName}}</td>
+                        <td>{{this.pDesc}}</td>
+                        <td class="text-end">
+                            <form method="POST" action="/viewSelectedProgram">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
+                                <input name="pId" type="hidden" value="{{this.pId}}"></input>
+                            </form>
+
+                            <form method="POST" action="/editSelectedProgram">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-pencil"></i>Edit</button>
+                                <input name="pId" type="hidden" value="{{this.pId}}"></input>
+                            </form>
+
+                            <form method="POST" action="/deleteSelectedProgram">
+                                <button class="btn btn-primary" type="submit"><i
+                                        class="bi bi-person-x"></i>Delete</button>
+                                <input name="pId" type="hidden" value="{{this.pId}}"></input>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+
+            </table>
+            {{/if}}
+        </div>
+
+        <div>
+            {{#if isMilestoneListView}}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Milestone Id</th>
+                        <th scope="col">Milestone Name</th>
+                        <th scope="col">Milestone Description</th>
+                        <th scope="col" class="text-end">Action</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+                    <tr>
+                        {{#each milestones}}
+                        <td>{{this.mId}}</td>
+                        <td>{{this.mName}}</td>
+                        <td>{{this.mDesc}}</td>
+                        <td class="text-end">
+                            <form method="POST" action="/viewSelectedMilestone">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
+                                <input name="mId" type="hidden" value="{{this.mId}}"></input>
+                            </form>
+
+                            <form method="POST" action="/editSelectedMilestone">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-pencil"></i>Edit</button>
+                                <input name="mId" type="hidden" value="{{this.mId}}"></input>
+                            </form>
+
+                            <form method="POST" action="/deleteSelectedMilestone">
+                                <button class="btn btn-primary" type="submit"><i
+                                        class="bi bi-person-x"></i>Delete</button>
+                                <input name="mId" type="hidden" value="{{this.mId}}"></input>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+
+            </table>
+            {{/if}}
+        </div>
+
+        <div>
+            {{#if isTaskListView}}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Task Id</th>
+                        <th scope="col">Task Name</th>
+                        <th scope="col">Task Description</th>
+
+                        <th scope="col" class="text-end">Action</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+                    <tr>
+                        {{#each tasks}}
+                        <td>{{this.tId}}</td>
+                        <td>{{this.tName}}</td>
+                        <td>{{this.tDesc}}</td>
+
+                        <td class="text-end">
+
+                            <form method="POST" action="/viewSelectedTask">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
+                                <input name="tId" type="hidden" value="{{this.tId}}"></input>
+                            </form>
+                            <form method="POST" action="/editSelectedTask">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-pencil"></i>Edit</button>
+                                <input name="tId" type="hidden" value="{{this.tId}}"></input>
+                            </form>
+
+                            <form method="POST" action="/deleteSelectedTask">
+                                <button class="btn btn-primary" type="submit"><i
+                                        class="bi bi-person-x"></i>Delete</button>
+                                <input name="tId" type="hidden" value="{{this.tId}}"></input>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+
+            </table>
+            {{/if}}
+        </div>
+
+        <div>
+            {{#if isTaskStatusView}}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Task Name</th>
+                        <th scope="col">Task Status</th>
+                        <th scope="col" class="text-end">Action</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+                    <tr>
+                        {{#each status}}
+                        <td>{{this.tName}}</td>
+                        <td>{{this.status}}</td>
+                        <td class="text-end">
+                            <form method="POST" action="/editTaskStatus">
+                                <button class="btn btn-primary" type="submit"><i class="bi bi-pencil"></i>Edit</button>
+                                <input name="tId1" type="hidden" value="{{this.tId}}"></input>
+                            </form>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+            {{/if}}
+
+        </div>
     </div>
 </body>
+
+</html>

@@ -62,7 +62,7 @@
       <thead>
         <tr>
           <th scope="col">User Id</th>
-          <th scope="col">UserName</th>
+          
           <th scope="col">First Name</th>
           <th scope="col">Last name</th>
           <th scope="col">Email</th>
@@ -73,7 +73,7 @@
       {{#each results}}
       <tr>
         <td>{{this.uId}}</td>
-        <td>{{this.username}}</td>
+       
         <td>{{this.uFName}}</td>
         <td>{{this.uLName}}</td>
         <td>{{this.uEmail}}</td>
@@ -106,7 +106,9 @@
           <form method="POST" action="/viewSelectedUser">
             <button class="btn btn-primary" type="submit">View</button>
             <input name="userId" type="hidden" value="{{this.uId}}"></input>
+
           </form>
+          
         </td>
       </tr>
       {{/each}}
