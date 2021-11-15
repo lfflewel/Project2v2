@@ -50,12 +50,12 @@
                 <img src="/img/homeIcon.png">
                 <span>HOME</span>
             </button>
-
+        {{#if addPermission}}
             <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
                 <img src="/img/addprogram.png">
                 <span>Add Program</span>
             </button>
-
+        {{/if}}
             <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
                 <img src="/img/logOutIcon.png">
                 <span>LOG OUT</span>
