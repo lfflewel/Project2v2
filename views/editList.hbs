@@ -163,7 +163,7 @@
                     {{#each tasks}}
                     <div class="form-group">
                         <label for="exampleFormControlFile1">Upload File</label>
-                        <input type="file" class="form-control-file" name="file" id="exampleFormControlFile1">
+                        <input type="file" class="form-control-file" name="file1" id="exampleFormControlFile1">
                     </div>
             </div>
 
@@ -176,10 +176,10 @@
             <label> Task Text </label>
             <input type="text" placeholder="Enter Task Text" name="updateTT" value="{{this.tText}}" required><br>
 
-
+            {{/each}}
 
             <input type="submit" value="UPDATE" class="btn btn-primary">
-            {{/each}}
+
             </form>
 
         </div>
@@ -208,7 +208,7 @@
                 </div>
 
 
-               
+
 
 
                 <input type="submit" value="UPDATE" class="btn btn-primary">
@@ -216,7 +216,7 @@
             </form>
 
 
-            
+
 
         </div>
         {{/if}}

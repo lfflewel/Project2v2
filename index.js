@@ -39,6 +39,7 @@ app.use(express.static('upload'));
 app.use(express.static(__dirname));
 
 
+
 // use hbs instead of html
 // app.set('view engine', 'html');
 
@@ -687,18 +688,18 @@ let tId;
 // display list of programs to be filtered on .hbs by permissions -- NOTE programList.hbs is not created yet. Create it once userList is perfected
 app.get('/programList', function (req, res) {
     if (req.session.loggedin) {
-        pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function (err, results) {
-            console.log(results);
+        pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function (err, programs) {
+
             if (err) throw err;
             isProgramListView = true;
-            res.render('programList', { results, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
+            res.render('programList', { programs, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         })
     }
 });
 
-
-// TODO: STILL NEED TO DO THIS PART. NOT SURE WHAT FUNCTION WE NEED FOR THIS
 // milestone view
+
+
 app.post('/viewSelectedProgram', function (req, res) {
     if (req.session.loggedin) {
         pId = req.body.pId;
@@ -708,7 +709,7 @@ app.post('/viewSelectedProgram', function (req, res) {
             if (err) throw err;
             isProgramListView = false;
             isMilestoneListView = true;
-            // programList.hbs is not created yet. Create it once userList is perfected
+
             res.render('programList', { milestones, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
@@ -726,7 +727,7 @@ app.post('/viewSelectedMilestone', function (req, res) {
             isProgramListView = false;
             isTaskListView = true;
             isMilestoneListView = false;
-            // programList.hbs is not created yet. Create it once userList is perfected
+
             res.render('programList', { tasks, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate });
         });
     };
@@ -835,29 +836,32 @@ app.post('/updateTask', function (req, res) {
 
 
         if (req.files) {
-            updateFile = req.files.file;
+            updateFile = req.files.file1;
         }
 
         let uploadPath;
         uploadPath = __dirname + '/public/upload/companyFile/' + updateFile.name;
 
-        // user mv(to place file on the server)
+        console.log(`Update File: ${updateFile.name}`)
+        console.log(`Task ID: ${tId}`)
+
+        // // user mv(to place file on the server)
         updateFile.mv(uploadPath, function (err) {
             if (err) return res.status(500).send(err);
             pool.query(`UPDATE Tasks SET tFile=? WHERE tId=?`, [updateFile.name, tId], function (err, results) {
                 if (!err) {
                     pool.query(`SELECT * FROM Tasks WHERE tId=?`, [tId], function (err, tasks) {
                         if (!err) {
-    
+
                             isTaskListView = true;
-    
-    
+
+
                             res.render('editList', { tasks, isProgramListView, isMilestoneListView, isTaskListView, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
                         }
                         else {
                             console.log(err);
                         }
-    
+
                     })
                 }
                 else {
@@ -867,19 +871,33 @@ app.post('/updateTask', function (req, res) {
             })
         })
 
-        pool.query(`UPDATE Tasks SET tName=?, tDesc=?, tText=? WHERE tId=?`, [updateTN, updateTD, updateTT, tId], function (err, results) {
-            pool.query(`SELECT * FROM Tasks WHERE tId=?`, [tId], function (err, tasks) {
-                isProgramListView = false;
-                isTaskListView = true;
-                isMilestoneListView = false;
 
-                res.render('editList', { tasks, isProgramListView, isMilestoneListView, isTaskListView, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
-            })
+
+        pool.query(`UPDATE Tasks SET tName=?, tDesc=?, tText=? WHERE tId=?`, [updateTN, updateTD, updateTT, tId], function (err, results) {
+            if (!err) {
+                pool.query(`SELECT * FROM Tasks WHERE tId=?`, [tId], function (err, tasks) {
+                    if (!err) {
+
+                        isTaskListView = true;
+
+
+                        res.render('editList', { tasks, isProgramListView, isMilestoneListView, isTaskListView, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
+                    }
+                    else {
+                        console.log(err);
+                    }
+
+                })
+            }
+            else {
+                console.log(err);
+            }
 
         })
     }
 
 })
+
 let tId1;
 
 // edit status
@@ -933,30 +951,116 @@ app.post('/updateTaskStatus', function (req, res) {
                 })
             }
 
-
-            //     if (!err) {
-            //         console.log(`Task2: ${tId1}`)
-            //         console.log("UPDATE")
-            //         pool.query('SELECT * FROM Tasks as T JOIN UserMilestoneTask as UMT ON T.tId=UMT.utId WHERE T.tId = ?', [tId], function (err, status) {
-            //             if (!err) {
-            //                 res.render('editList', { status, statusOptions, isTaskStatusView, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
-            //             }
-            //             else {
-            //                 console.log(err)
-            //             }
-
-            //         })
-            //     }
-            //     else {
-            //         console.log(err)
-            //     }
-            // })
-
-    })
-}
+        })
+    }
 
 })
 
+// delete program 
+app.post('/deleteSelectedProgram', function (req, res) {
+    if (req.session.loggedin) {
+        pId = req.body.pId
+
+
+
+        console.log(`P Id1: ${pId}`);
+        console.log(`C Id1: ${companyId}`);
+
+        pool.query(`DELETE FROM Program WHERE pId=?`, [pId], function (err, programs) {
+            if (!err) {
+                pool.query(`SELECT * FROM Program WHERE pcId = ?`, [companyId], function (err, programs) {
+                    if (!err) {
+
+                        isProgramListView = true;
+                        isMilestoneListView = false;
+
+                        isTaskListView = false;
+
+                        console.log("Delete it")
+                        res.render('programList', { programs, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, alert: "Delete Program Sucessfully" });
+                    }
+                    else {
+                        console.log(err)
+                    }
+
+                })
+            }
+            else {
+                console.log(err);
+            }
+
+        })
+    }
+})
+
+
+// delete milestone
+app.post('/deleteSelectedMilestone', function (req, res) {
+    if (req.session.loggedin) {
+        mId = req.body.mId
+
+
+        console.log(`M Id1: ${mId}`);
+        console.log(`P Id1: ${pId}`);
+
+        pool.query(`DELETE FROM Milestone WHERE mId=?`, [mId], function (err, milestones) {
+            if (!err) {
+                pool.query(`SELECT * FROM Milestone WHERE mpId = ?`, [pId], function (err, milestones) {
+                    if (!err) {
+                        isProgramListView = false;
+                        isMilestoneListView = true;
+
+                        isTaskListView = false;
+                        console.log("Delete it")
+                        res.render('programList', { milestones, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, alert: "Delete Milestone Sucessfully" });
+                    }
+                    else {
+                        console.log(err)
+                    }
+
+                })
+            }
+            else {
+                console.log(err);
+            }
+
+        })
+    }
+})
+
+
+
+// delete task
+app.post('/deleteSelectedTask', function (req, res) {
+    if (req.session.loggedin) {
+        tId = req.body.tId
+
+        console.log(`Task Id1: ${tId}`);
+        console.log(`M Id1: ${mId}`);
+        pool.query(`DELETE FROM Tasks WHERE tId=?`, [tId], function (err, tasks) {
+            if (!err) {
+                pool.query('SELECT * FROM Tasks WHERE tmId=?', [mId], function (err, tasks) {
+                    if (!err) {
+                        isProgramListView = false;
+                        isMilestoneListView = false;
+
+                        isTaskListView = true;
+                        console.log("Delete it")
+                        res.render('programList', { tasks, isTaskListView, isMilestoneListView, isProgramListView, activeUserFullName, isMentor, isMentee, addPermission, imHome, companyName, companyLogo, todayDate, alert: "Delete Task Sucessfully" });
+                    }
+                    else {
+                        console.log(err)
+                    }
+
+                })
+            }
+            else {
+                console.log(err);
+            }
+
+        })
+    }
+})
 
 /*--------------------------------------------------END PROGRAM LIST PAGE---------------------------------------*/
 

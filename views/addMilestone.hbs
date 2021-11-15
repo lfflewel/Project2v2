@@ -207,6 +207,12 @@
         margin-top: 20px;
 
     }
+
+    #createNewMilestone {
+        display: none;
+        flex-direction: column;
+
+    }
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -251,12 +257,12 @@
 
 
         <button type="button" onclick="location.href = '/assignUser'">Assign User</button>
+        <button class="button" value="add" id="show_milestone_box" onclick="showMilestoneBox()">Add More
+            Milestone</button>
 
-        <div class="body-container">
-            <h1>Milestone Creator</h1>
-            <p>To create a Milestone, type the Milestone name in the field below and click the create milestone button
-            </p>
-            <p>Once you create the Milestone, you will be prompted to create tasks for each milestone created</p>
+
+        <div>
+
             <form action="/newMilestone" method="POST" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="col">
@@ -292,7 +298,29 @@
             </form>
         </div>
 
-        <div class="listContainer">
+
+
+        <div class="body-container">
+            <div id="createNewMilestone">
+                <form action="/newMilestone" method="POST" enctype="multipart/form-data">
+
+                    <input type="text" id="mnInput" class="form-control" name="taskName" placeholder="Milestone Name">
+
+
+                    <input type="text" id="mdInput" class="form-control" name="taskDesc"
+                        placeholder="Milestone Description">
+
+            </div>
+
+
+            <button type="submit" value="Create">Create Milestone</button>
+            <button id="close_milestone_box" onclick="closeMilestoneBox()">Close</button>
+
+            </form>
+            
+        </div>
+
+        <div class="milestoneListContainer">
 
             <table class="table table-bordered">
                 <thead>
@@ -324,10 +352,28 @@
                                 <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
                                 <input name="milestoneId" type="hidden" value="{{this.mId}}"></input>
                             </form>
-                    {{/each}}
+                            {{/each}}
                     </tr>
                 </tbody>
             </table>
+        </div>
+
+        <script>
+            function showMilestoneBox() {
+                document.getElementById("createNewMilestone").style.display = "flex";
+                document.getElementById("milestoneListContainer").style.display = "none";
+            }
+
+            function closeMilestoneBox() {
+                document.getElementById("mnInput").value = '';
+                document.getElementById("mdInput").value = '';
+
+                document.getElementById("createNewMilestone").style.display = "none";
+                document.getElementById("milestoneListContainer").style.display = "flex";
+            };
+        </script>
+
+
 
 
 

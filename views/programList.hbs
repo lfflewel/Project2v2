@@ -56,11 +56,27 @@
                 <span>Add Program</span>
             </button>
 
+            
+          
+
+            <button onclick="goBack()">
+                 <img src="/img/backbutton.png">
+                
+                <span>Go Back</span>
+            </button>
             <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
                 <img src="/img/logOutIcon.png">
                 <span>LOG OUT</span>
             </button>
+
         </div>
+
+        {{#if alert}}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{alert}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {{/if}}
 
 
         <div>
@@ -78,7 +94,7 @@
 
                 <tbody>
                     <tr>
-                        {{#each results}}
+                        {{#each programs}}
                         <td>{{this.pId}}</td>
                         <td>{{this.pName}}</td>
                         <td>{{this.pDesc}}</td>
@@ -227,6 +243,11 @@
 
         </div>
     </div>
+    <script>
+        function goBack() {
+            window.history.go(-2);
+        }
+    </script>
 </body>
 
 </html>
