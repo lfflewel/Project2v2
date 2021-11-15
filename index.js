@@ -845,7 +845,25 @@ app.post('/updateTask', function (req, res) {
         updateFile.mv(uploadPath, function (err) {
             if (err) return res.status(500).send(err);
             pool.query(`UPDATE Tasks SET tFile=? WHERE tId=?`, [updateFile.name, tId], function (err, results) {
-                console.log("UPDATE")
+                if (!err) {
+                    pool.query(`SELECT * FROM Tasks WHERE tId=?`, [tId], function (err, tasks) {
+                        if (!err) {
+    
+                            isTaskListView = true;
+    
+    
+                            res.render('editList', { tasks, isProgramListView, isMilestoneListView, isTaskListView, activeUserFullName, companyName, companyLogo, todayDate, alert: 'Update successfully.' });
+                        }
+                        else {
+                            console.log(err);
+                        }
+    
+                    })
+                }
+                else {
+                    console.log(err);
+                }
+
             })
         })
 
