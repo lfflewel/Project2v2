@@ -76,8 +76,9 @@
                 <thead>
                     <tr>
                         <th scope="col">Task Id</th>
-                        <th scope="col">Task Ordinal</th>
+                        <th scope="col">Task Name</th>
                         <th scope="col">Task Desc</th>
+                        <th scope="col">Task File</th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
@@ -86,6 +87,7 @@
                     <td>{{this.tId}}</td>
                     <td>{{this.tName}}</td>
                     <td>{{this.tDesc}}</td>
+                    <td>{{this.tFile}}</td>
                     <td>
                         <form method="POST" action="/viewSelectedMileTask">
                             <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
