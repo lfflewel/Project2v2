@@ -164,5 +164,7 @@ card_about { font-style: italic;}
     float: left;
 }
 
-
+.hide {
+    display: none;
+}
  

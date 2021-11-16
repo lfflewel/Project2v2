@@ -300,10 +300,21 @@
             <img class="card_image" src="/public/upload/profilePhoto/defaultimage.png" alt="User Profile">
             {{/if}}
             <h1 class="card_name">{{this.uFName}} {{this.uLName}}</h1>
-            <div class="card_job">{{this.uJob}}</div>
-            <p class="card_about">{{this.uAbout}}</p>
+            <div class="card_job">Job Title: {{this.uJob}}</div>
+            <div class="card_role">Role: {{this.uRole}}</div>
+            {{/each}}
+
+            {{!-- {{#each program}} --}}
+            {{#if progName}}
+                <div class="card_program">Program: {{progName}}</div>
+            {{/if}}
+            {{!-- {{/each}} --}}
+
+            {{#each results}}
+                <p class="card_about">{{this.uAbout}}</p>
+            {{/each}}
         </div>
-        {{/each}}
+        {{!-- {{/each}} --}}
 
         {{!-- right side buttons --}}
         <div class="profile-btns" id="right">

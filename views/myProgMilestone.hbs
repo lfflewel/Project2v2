@@ -50,12 +50,12 @@
                 <img src="/img/homeIcon.png">
                 <span>HOME</span>
             </button>
-
+        {{#if addPermission}}
             <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
                 <img src="/img/addprogram.png">
                 <span>Add Program</span>
             </button>
-
+        {{/if}}
             <button type="button" class="navigation-buttons" onclick="location.href = '/logout'">
                 <img src="/img/logOutIcon.png">
                 <span>LOG OUT</span>
@@ -64,8 +64,9 @@
 
         
         {{!-- <p>Project: {{pName}}</p> --}}
-        
-        <h3 style="text-align: center;">Milestone: {{mName}}</h3>
+        <h3 style="text-align: center;">Program: {{thisProgramName}}</h3>
+
+        <h3 style="text-align: center;">Milestone: {{thisMilestoneName}}</h3>
         <br><br>
         
        
@@ -75,25 +76,40 @@
             <tbody>
                 <thead>
                     <tr>
-                        <th scope="col">Task Id</th>
+                        {{!-- <th scope="col">Task Id</th> --}}
                         <th scope="col">Task Ordinal</th>
                         <th scope="col">Task Desc</th>
+                        <th scope="col">Task File</th>
+                    {{#if isMentee}}
                         <th scope="col">Action</th>
+                    {{/if}}
                     </tr>
                 </thead>
+                {{#if isMentee}}
                 {{#each results}}
-                <tr>
-                    <td>{{this.tId}}</td>
-                    <td>{{this.tName}}</td>
-                    <td>{{this.tDesc}}</td>
-                    <td>
-                        <form method="POST" action="/viewSelectedMileTask">
-                            <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
-                            <input name="tId" type="hidden" value="{{this.tId}}"></input>
-                        </form>
-                    </td>
-                </tr>
+                    <tr>
+                        <td class="hide">{{this.tId}}</td>
+                        <td>{{this.tName}}</td>
+                        <td>{{this.tDesc}}</td>
+                        <td><a href="/public/upload/companyFile/{{this.tFile}}" download="{{this.tFile}}">{{this.tFile}}</a> </td>
+                            <td>
+                                <form method="POST" action="/viewSelectedMileTask">
+                                    <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
+                                    <input name="tId" type="hidden" value="{{this.tId}}"></input>
+                                </form>
+                            </td>
+                    </tr>
                 {{/each}}
+                {{else}}
+                {{#each results}}
+                    <tr>
+                        <td class="hide">{{this.tId}}</td>
+                        <td>{{this.tName}}</td>
+                        <td>{{this.tDesc}}</td>
+                        <td><a href="/public/upload/companyFile/{{this.tFile}}" download="{{this.tFile}}">{{this.tFile}}</a> </td>
+
+                {{/each}}
+                {{/if}}
             </tbody>
         </table>
     </div>
