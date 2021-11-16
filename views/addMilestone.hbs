@@ -208,11 +208,7 @@
 
     }
 
-    #createNewMilestone {
-        display: none;
-        flex-direction: column;
-
-    }
+  
 </style>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -255,11 +251,7 @@
         </div>
         {{/if}}
 
-
         <button type="button" onclick="location.href = '/assignUser'">Assign User</button>
-        <button class="button" value="add" id="show_milestone_box" onclick="showMilestoneBox()">Add More
-            Milestone</button>
-
 
         <div>
 
@@ -296,29 +288,6 @@
                         <button type="submit" name="createprogram">Create </button>
                     </div>
             </form>
-        </div>
-
-
-
-        <div class="body-container">
-            <div id="createNewMilestone">
-                <form action="/newMilestone" method="POST" enctype="multipart/form-data">
-
-                    <input type="text" id="mnInput" class="form-control" name="taskName" placeholder="Milestone Name">
-
-
-                    <input type="text" id="mdInput" class="form-control" name="taskDesc"
-                        placeholder="Milestone Description">
-
-            
-
-
-            <button type="submit" value="Create">Create Milestone</button>
-            
-
-            </form>
-            <button onclick="closeMilestoneBox()">Close</button>
-            </div>
         </div>
 
         <div class="milestoneListContainer">
@@ -358,24 +327,6 @@
                 </tbody>
             </table>
         </div>
-
-        <script>
-            function showMilestoneBox() {
-                document.getElementById("createNewMilestone").style.display = "flex";
-                document.getElementById("milestoneListContainer").style.display = "none";
-            }
-
-            function closeMilestoneBox() {
-                document.getElementById("mnInput").value = '';
-                document.getElementById("mdInput").value = '';
-
-                document.getElementById("createNewMilestone").style.display = "none";
-                document.getElementById("milestoneListContainer").style.display = "flex";
-            };
-        </script>
-
-
-
 
 
     </main>
