@@ -98,6 +98,7 @@
                         <td>{{this.pId}}</td>
                         <td>{{this.pName}}</td>
                         <td>{{this.pDesc}}</td>
+                         
                         <td class="text-end">
                             <form method="POST" action="/viewSelectedProgram">
                                 <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
@@ -175,7 +176,7 @@
                         <th scope="col">Task Id</th>
                         <th scope="col">Task Name</th>
                         <th scope="col">Task Description</th>
-
+                        <th scope="col">Task File</th>
                         <th scope="col" class="text-end">Action</th>
                     </tr>
                 </thead>
@@ -187,7 +188,7 @@
                         <td>{{this.tId}}</td>
                         <td>{{this.tName}}</td>
                         <td>{{this.tDesc}}</td>
-
+                        <td>{{this.tFile}}</td>
                         <td class="text-end">
 
                             <form method="POST" action="/viewSelectedTask">
