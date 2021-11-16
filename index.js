@@ -605,7 +605,7 @@ app.get('/myMentor', function (req, res) {
 
 // take mentor to their list of mentees
 app.get('/myMentees', function (req, res) {
-    if (req.session.loggedin) {
+    if (req.session.loggedin) {      
         pool.query(`SELECT * FROM User WHERE mentorId = ?`, [activeUserId], function (err, results) {
             console.log(results);
             if (err) throw err;
