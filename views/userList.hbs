@@ -61,7 +61,7 @@
     <table class="table table-bordered">
       <thead>
         <tr>
-          <th scope="col">User Id</th>
+          {{!-- <th scope="col">User Id</th> --}}
           
           <th scope="col">First Name</th>
           <th scope="col">Last name</th>
@@ -73,7 +73,7 @@
       {{#if addPermission}}
       {{#each results}}
       <tr>
-        <td>{{this.uId}}</td>
+        <td class="hide">{{this.uId}}</td>
        
         <td>{{this.uFName}}</td>
         <td>{{this.uLName}}</td>

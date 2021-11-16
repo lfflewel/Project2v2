@@ -50,12 +50,12 @@
                 <img src="/img/homeIcon.png">
                 <span>HOME</span>
             </button>
-        {{#if addPermission}}
+
             <button type="button" class="navigation-buttons" onclick="location.href = '/newProgram'">
                 <img src="/img/addprogram.png">
                 <span>Add Program</span>
             </button>
-        {{/if}}
+
             
           
 
@@ -84,7 +84,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">Program Id</th>
+                        {{!-- <th scope="col">Program Id</th> --}}
                         <th scope="col">Program Name</th>
                         <th scope="col">Program Description</th>
                         <th scope="col" class="text-end">Action</th>
@@ -95,7 +95,7 @@
                 <tbody>
                     <tr>
                         {{#each programs}}
-                        <td>{{this.pId}}</td>
+                        <td class="hide">{{this.pId}}</td>
                         <td>{{this.pName}}</td>
                         <td>{{this.pDesc}}</td>
                          
@@ -129,7 +129,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">Milestone Id</th>
+                        {{!-- <th scope="col">Milestone Id</th> --}}
                         <th scope="col">Milestone Name</th>
                         <th scope="col">Milestone Description</th>
                         <th scope="col" class="text-end">Action</th>
@@ -140,7 +140,7 @@
                 <tbody>
                     <tr>
                         {{#each milestones}}
-                        <td>{{this.mId}}</td>
+                        <td class="hide">{{this.mId}}</td>
                         <td>{{this.mName}}</td>
                         <td>{{this.mDesc}}</td>
                         <td class="text-end">
@@ -173,7 +173,7 @@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">Task Id</th>
+                        {{!-- <th scope="col">Task Id</th> --}}
                         <th scope="col">Task Name</th>
                         <th scope="col">Task Description</th>
                         <th scope="col">Task File</th>
@@ -185,16 +185,17 @@
                 <tbody>
                     <tr>
                         {{#each tasks}}
-                        <td>{{this.tId}}</td>
+                        <td class="hide">{{this.tId}}</td>
                         <td>{{this.tName}}</td>
                         <td>{{this.tDesc}}</td>
-                        <td>{{this.tFile}}</td>
+                        <td><a href="/public/upload/companyFile/{{this.tFile}}" download="{{this.tFile}}">{{this.tFile}}</a> </td>
+
                         <td class="text-end">
 
-                            <form method="POST" action="/viewSelectedTask">
+                            {{!-- <form method="POST" action="/viewSelectedTask">
                                 <button class="btn btn-primary" type="submit"><i class="bi bi-eye"></i>View</button>
                                 <input name="tId" type="hidden" value="{{this.tId}}"></input>
-                            </form>
+                            </form> --}}
                             <form method="POST" action="/editSelectedTask">
                                 <button class="btn btn-primary" type="submit"><i class="bi bi-pencil"></i>Edit</button>
                                 <input name="tId" type="hidden" value="{{this.tId}}"></input>
@@ -215,7 +216,7 @@
         </div>
 
         <div>
-            {{#if isTaskStatusView}}
+            {{!-- {{#if isTaskStatusView}}
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -240,7 +241,7 @@
                     {{/each}}
                 </tbody>
             </table>
-            {{/if}}
+            {{/if}} --}}
 
         </div>
     </div>
